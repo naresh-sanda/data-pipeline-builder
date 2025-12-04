@@ -1,0 +1,5226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnvizGnt - Databricks ELT Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      /* Primary Colors */
+      --primary-color: #1976D2;
+      --primary-light: #42A5F5;
+      --primary-dark: #1565C0;
+
+      /* Secondary Colors */
+      --secondary-color: #43A047;
+      --secondary-light: #66BB6A;
+      --secondary-dark: #388E3C;
+
+      /* Accent Colors */
+      --accent-color: #263238;
+      --accent-light: #37474F;
+
+      /* Semantic Colors */
+      --success-color: #43A047;
+      --warning-color: #FB8C00;
+      --danger-color: #E53935;
+      --info-color: #039BE5;
+
+      /* Neutral Colors */
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F5F7FA;
+      --bg-tertiary: #ECEFF1;
+
+      --text-primary: #212121;
+      --text-secondary: #757575;
+      --text-tertiary: #9E9E9E;
+
+      --border-color: #E0E0E0;
+      --border-dark: #BDBDBD;
+
+      /* Special Colors */
+      --file-source-bg: #FFF8E1;
+      --file-source-border: #FFB300;
+
+      /* Legacy Support (deprecated) */
+      --dark-bg: #1E1E1E;
+      --light-bg: #F5F7FA;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-secondary);
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    .main-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Header Styles */
+    .header {
+      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--primary-color);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-container {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-text {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -1px;
+    }
+
+    .logo-an {
+      color: var(--primary-color);
+    }
+
+    .logo-viz {
+      color: var(--accent-color);
+    }
+
+    .logo-gnt {
+      color: var(--secondary-color);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+      border-left: 3px solid var(--primary-color);
+      padding-left: 20px;
+    }
+
+    .header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs-custom {
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+      padding: 0 40px;
+      border-bottom: 2px solid #e0e0e0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-tabs-custom .nav-link {
+      color: #6c757d;
+      border: none;
+      padding: 15px 25px;
+      font-weight: 500;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .nav-tabs-custom .nav-link:hover {
+      color: var(--primary-color);
+      background: rgba(25, 118, 210, 0.08);
+    }
+
+    .nav-tabs-custom .nav-link.active {
+      color: var(--primary-color);
+      background: white;
+      border-bottom: 3px solid var(--primary-color);
+      font-weight: 600;
+    }
+
+    .nav-tabs-custom .nav-link i {
+      margin-right: 8px;
+    }
+
+    /* Content Area */
+    .content-area {
+      padding: 10px 15px;
+    }
+
+    /* Workflow Designer Section */
+    .workflow-designer {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .sidebar-panel {
+      background: var(--light-bg);
+      border-radius: 12px;
+      padding: 15px;
+      height: fit-content;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .canvas-area {
+      background: white;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      min-height: 500px;
+      padding: 15px;
+      position: relative;
+    }
+
+    /* Step Cards */
+    .step-card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .step-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0, 153, 255, 0.2);
+    }
+
+    .step-card.active {
+      background: linear-gradient(to right, #e3f2fd 0%, #ffffff 100%);
+      border-left-color: var(--primary-color);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .step-status {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--success-color);
+    }
+
+    .step-status.pending {
+      background: var(--warning-color);
+    }
+
+    .step-status.error {
+      background: var(--danger-color);
+    }
+
+    /* Flow Visualization */
+    .flow-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .flow-step {
+      background: white;
+      border-radius: 16px;
+      padding: 15px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      transition: all 0.3s;
+      border: 1px solid #f0f0f0;
+    }
+
+    .flow-step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 153, 255, 0.15);
+      border-color: rgba(0, 153, 255, 0.2);
+    }
+
+    .flow-step-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .flow-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+    }
+
+    .flow-icon.source {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #0066CC 100%);
+    }
+
+    .flow-icon.transform {
+      background: linear-gradient(135deg, var(--secondary-color) 0%, #5a9216 100%);
+    }
+
+    .flow-icon.load {
+      background: linear-gradient(135deg, #4facfe 0%, var(--primary-color) 100%);
+    }
+
+    .flow-icon.execute {
+      background: linear-gradient(135deg, var(--secondary-color) 0%, #38d97b 100%);
+    }
+
+    .flow-icon.monitor {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #34495e 100%);
+    }
+
+    .arrow-connector {
+      font-size: 32px;
+      color: var(--primary-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      50% {
+        transform: translateY(8px);
+        opacity: 0.6;
+      }
+    }
+
+    /* Theme Styles for DW/DM */
+    .theme-silver {
+      color: #6c757d !important;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-left: 4px solid #6c757d;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    .theme-gold {
+      color: #b78900 !important;
+      background: linear-gradient(135deg, #fff9db 0%, #fff3cd 100%);
+      border-left: 4px solid #ffc107;
+      padding: 5px 10px;
+      border-radius: 4px;
+    }
+
+    .badge-silver {
+      background-color: #6c757d;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-gold {
+      background-color: #ffc107;
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* Visual Designer Styles */
+    .designer-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .table-selector {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      max-height: 600px;
+      overflow-y: auto;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-item {
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .table-item:hover {
+      background: rgba(25, 118, 210, 0.08);
+      transform: translateX(5px);
+      border-left-color: var(--primary-color);
+      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+    }
+
+    .table-item.selected {
+      background: rgba(67, 160, 71, 0.08);
+      border-left-color: var(--success-color);
+      font-weight: 600;
+    }
+
+    .designer-canvas {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 15px;
+      min-height: 500px;
+      border: 2px dashed #dee2e6;
+      position: relative;
+    }
+
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .table-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .table-card-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .column-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .preview-table-container {
+      max-height: 200px;
+      overflow: auto;
+      margin-top: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .preview-table-container table {
+      margin-bottom: 0;
+    }
+
+    .preview-table-container th {
+      background-color: #f8f9fa;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .column-item {
+      padding: 8px 12px;
+      margin-bottom: 5px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .column-item:hover {
+      background: #e9ecef;
+    }
+
+    .column-checkbox {
+      margin-right: 10px;
+    }
+
+    .join-connector {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid var(--secondary-color);
+    }
+
+    .join-config {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .transform-section {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .transform-section.target-config {
+      background: linear-gradient(to right, #f0f9ff 0%, #f0fdf4 100%);
+      border: 2px solid var(--primary-color);
+      border-left: 5px solid var(--primary-color);
+    }
+
+    .transform-section.target-config h6 {
+      color: var(--accent-color);
+    }
+
+    .computed-column {
+      background: #fff3cd;
+      border-left: 4px solid var(--warning-color);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .connection-form {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .connection-status {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .connection-status.connected {
+      background: var(--success-color);
+      box-shadow: 0 0 8px var(--success-color);
+    }
+
+    .connection-status.disconnected {
+      background: var(--danger-color);
+    }
+
+    /* Horizontal Stepper Styles */
+    .stepper-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      position: relative;
+      padding: 0 20px;
+    }
+
+    .stepper-header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+      transform: translateY(-50%);
+    }
+
+    .stepper-step {
+      position: relative;
+      z-index: 1;
+      background: white;
+      padding: 8px 15px;
+      border-radius: 30px;
+      border: 2px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-width: 150px;
+      justify-content: center;
+    }
+
+    .stepper-step:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stepper-step.active {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 153, 255, 0.3);
+    }
+
+    .stepper-step.completed {
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+
+    .stepper-step.completed .step-icon {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.3s;
+    }
+
+    .stepper-step.active .step-icon {
+      background: white;
+      color: var(--primary-color);
+    }
+
+    .step-label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .step-content-container {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid #f0f0f0;
+      min-height: 400px;
+    }
+
+    .step-pane {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .step-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Hide original flow elements */
+    .flow-step,
+    .arrow-connector {
+      display: none !important;
+    }
+
+    /* Accordion Styles */
+    details.transform-section summary {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    details.transform-section summary::before {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transition: transform 0.3s ease;
+      color: var(--primary-color);
+      font-size: 14px;
+    }
+
+    details.transform-section[open] summary::before {
+      transform: translateY(-50%) rotate(0deg);
+    }
+
+    details.transform-section summary::-webkit-details-marker {
+      display: none;
+    }
+
+    /* File Drop Zone Styles */
+    .designer-canvas {
+      position: relative;
+    }
+
+    .designer-canvas.drag-over {
+      background: linear-gradient(135deg, rgba(0, 153, 255, 0.1) 0%, rgba(122, 193, 67, 0.1) 100%);
+      border-color: var(--primary-color);
+      border-style: solid;
+    }
+
+    .file-drop-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 153, 255, 0.05);
+      border: 3px dashed var(--primary-color);
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .file-drop-overlay.active {
+      display: flex;
+    }
+
+    .file-drop-content {
+      text-align: center;
+      color: var(--primary-color);
+    }
+
+    .file-drop-content i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .table-card.file-source {
+      border-left: 4px solid var(--file-source-border);
+      background: linear-gradient(to right, var(--file-source-bg) 0%, #ffffff 100%);
+    }
+
+    .table-card.file-source .table-card-title::before {
+      content: '\f15b';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 400;
+      margin-right: 8px;
+      color: var(--warning-color);
+    }
+
+    .file-info {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .table-card.file-source .column-item label {
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
+      display: block;
+    }
+
+    .table-card.file-source .preview-table-container th {
+      word-break: break-word;
+      max-width: 200px;
+      white-space: normal;
+      font-size: 0.75rem;
+    }
+
+    .table-card.file-source .preview-table-container td {
+      word-break: break-word;
+      max-width: 200px;
+      white-space: normal;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="main-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-container">
+          <div class="logo-text">
+            <span class="logo-an">An</span><span class="logo-viz">viz</span><span class="logo-gnt">Gnt</span>
+          </div>
+        </div>
+        <div>
+          <h1><i class="fas fa-database"></i> Databricks ELT Platform</h1>
+          <p class="mb-0 mt-1" style="font-size: 13px; opacity: 0.85;">Enterprise Data Warehouse to Data Mart Pipeline
+          </p>
+        </div>
+      </div>
+      <div class="user-info">
+        <div>
+          <div style="text-align: right; font-size: 14px;">
+            <div style="font-weight: 600;">Partner Admin</div>
+            <small style="opacity: 0.8;">partner_id: 12345</small>
+          </div>
+        </div>
+        <div class="user-avatar">PA</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <ul class="nav nav-tabs nav-tabs-custom" id="mainTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="jobs-tab" data-bs-toggle="tab" href="#jobs" role="tab">
+        <i class="fas fa-tasks"></i> Jobs & Execution
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="workflow-tab" data-bs-toggle="tab" href="#workflow" role="tab">
+        <i class="fas fa-project-diagram"></i> Workflow Designer
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="catalog-tab" data-bs-toggle="tab" href="#catalog" role="tab">
+        <i class="fas fa-table"></i> Data Catalog
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="lineage-tab" data-bs-toggle="tab" href="#lineage" role="tab">
+        <i class="fas fa-code-branch"></i> Data Lineage
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="monitoring-tab" data-bs-toggle="tab" href="#monitoring" role="tab">
+        <i class="fas fa-chart-line"></i> Monitoring
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content content-area" id="mainTabContent">
+    <!-- Workflow Tab -->
+    <div class="tab-pane fade" id="workflow" role="tabpanel">
+      <h3 class="mb-2"><i class="fas fa-cogs"></i> Interactive Data Pipeline Flow</h3>
+
+      <div class="stepper-header">
+        <div class="stepper-step active" onclick="activateStep('connect')">
+          <div class="step-icon"><i class="fas fa-plug"></i></div>
+          <div class="step-label">Setup</div>
+        </div>
+        <div class="stepper-step" onclick="activateStep('metadata')">
+          <div class="step-icon"><i class="fas fa-download"></i></div>
+          <div class="step-label">Inspect</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="stepper-step" onclick="activateStep('transform')">
+          <div class="step-icon"><i class="fas fa-drafting-compass"></i></div>
+          <div class="step-label">Build</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="stepper-step" onclick="activateStep('vcs')">
+          <div class="step-icon"><i class="fab fa-github"></i></div>
+          <div class="step-label">Review</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="stepper-step" onclick="activateStep('execute')">
+          <div class="step-icon"><i class="fas fa-play"></i></div>
+          <div class="step-label">Deploy</div>
+        </div>
+      </div>
+
+      <div class="step-content-container">
+        <!-- Step 1: Connect -->
+        <div class="step-pane active" id="step-connect">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fas fa-plug text-primary"></i> Connect to Databricks Unity Catalog</h4>
+            <button class="btn btn-primary" onclick="activateStep('metadata')">Next Step <i
+                class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="connection-form">
+            <!-- Connection Mode Switch -->
+            <div class="d-flex justify-content-center mb-3">
+              <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="connectionMode" id="modeApi" autocomplete="off" checked
+                  onclick="toggleConnectionMode('api')">
+                <label class="btn btn-outline-primary" for="modeApi">API Connection</label>
+
+                <input type="radio" class="btn-check" name="connectionMode" id="modeJdbc" autocomplete="off"
+                  onclick="toggleConnectionMode('jdbc')">
+                <label class="btn btn-outline-primary" for="modeJdbc">JDBC Connection</label>
+              </div>
+            </div>
+
+            <!-- API Fields -->
+            <div id="api-fields">
+              <div class="mb-3">
+                <label class="form-label"><strong>Workspace URL</strong></label>
+                <input type="text" class="form-control" id="workspaceUrl"
+                  placeholder="https://your-workspace.cloud.databricks.com"
+                  value="https://demo-workspace.cloud.databricks.com">
+              </div>
+            </div>
+
+            <!-- JDBC Fields -->
+            <div id="jdbc-fields" style="display: none;">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="mb-3">
+                    <label class="form-label"><strong>Server Hostname</strong></label>
+                    <input type="text" class="form-control" id="serverHost"
+                      placeholder="adb-xxxxxxxx.xx.azuredatabricks.net">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label"><strong>Port</strong></label>
+                    <input type="text" class="form-control" id="serverPort" value="443">
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label"><strong>HTTP Path</strong></label>
+                <input type="text" class="form-control" id="httpPath" placeholder="sql/protocolv1/o/xxxx/xxxx">
+              </div>
+            </div>
+
+            <!-- Common Fields -->
+            <div class="mb-3">
+              <label class="form-label"><strong>Access Token</strong></label>
+              <input type="password" class="form-control" id="accessToken"
+                placeholder="Enter your personal access token" value="dapi***************************">
+            </div>
+
+
+            <div class="mb-3 text-center">
+              <span class="connection-status disconnected" id="connectionStatus"></span>
+              <span id="connectionText">Not Connected</span>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary flex-grow-1" onclick="testConnection()" id="btnTestConnection">
+                <i class="fas fa-plug"></i> Test Connection
+              </button>
+              <button class="btn btn-primary flex-grow-1" onclick="saveAndLoadMetadata()" id="btnSaveLoad">
+                <i class="fas fa-save"></i> Save & Next
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Metadata -->
+        <div class="step-pane" id="step-metadata">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fas fa-download text-primary"></i> Load Metadata</h4>
+            <div>
+              <button class="btn btn-outline-secondary me-2" onclick="activateStep('connect')"><i
+                  class="fas fa-arrow-left"></i> Previous</button>
+              <button class="btn btn-primary" onclick="activateStep('transform')">Next Step <i
+                  class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- Connection Selector -->
+          <div class="card bg-light mb-3">
+            <div class="card-body" style="padding: 10px 15px;">
+              <div class="row align-items-end g-2">
+                <div class="col-md-6">
+                  <label class="form-label mb-1" style="font-size: 0.9rem;"><strong><i class="fas fa-plug"></i>
+                      Connection</strong></label>
+                  <div class="d-flex align-items-center gap-2">
+                    <select class="form-select form-select-sm" id="metaConnectionSelect" style="flex: 1;">
+                      <option value="current" selected>Use Current Connection (demo-workspace)</option>
+                      <option value="new">Configure New Connection...</option>
+                      <option value="conn1">Production Workspace</option>
+                      <option value="conn2">Development Workspace</option>
+                      <option value="conn3">Staging Workspace</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="activateStep('connect')"
+                      title="Go to Connection Setup">
+                      <i class="fas fa-cog"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <small class="text-muted" style="font-size: 0.75rem;">
+                    <i class="fas fa-info-circle"></i> Select a connection or configure a new one to load metadata
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Catalog & Schema Selection Section -->
+          <div class="card bg-light mb-3">
+            <div class="card-body">
+              <div class="row align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label"><strong>Select Catalog</strong></label>
+                  <select class="form-select" id="metaCatalogSelect" onchange="updateSchemaOptions()">
+                    <option value="main" selected>main</option>
+                    <option value="analytics">analytics</option>
+                    <option value="sandbox">sandbox</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label"><strong>Select Schema</strong></label>
+                  <select class="form-select" id="metaSchemaSelect">
+                    <option value="all" selected>All Schemas</option>
+                    <option value="dw">dw</option>
+                    <option value="dm">dm</option>
+                    <option value="staging">staging</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <button class="btn btn-primary w-100" onclick="loadMetadata()">
+                    <i class="fas fa-sync"></i> Fetch Metadata
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Catalog:</strong> <code id="metaCatalog">main</code></p>
+              <p><strong>Schemas Loaded:</strong> <span id="schemaCount">3</span></p>
+              <p><strong>Tables Loaded:</strong> <span id="tableCount">47</span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Storage Format:</strong> Delta Lake</p>
+              <p><strong>Location:</strong> s3://databricks-warehouse/</p>
+              <p><strong>Last Sync:</strong> <span id="lastSync">2025-11-03 20:43</span></p>
+            </div>
+          </div>
+          <div class="alert alert-success mt-3">
+            <i class="fas fa-check-circle"></i> <strong>Metadata Loaded Successfully</strong>
+            <ul class="mb-0 mt-2">
+              <li><code>main.dw</code> - 47 tables (customers, sales_orders, products, etc.)</li>
+              <li><code>main.dm</code> - 23 tables</li>
+              <li><code>main.staging</code> - 15 tables</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary btn-sm mt-2" onclick="loadMetadata()" style="display: none;">
+            <i class="fas fa-sync"></i> Refresh Metadata
+          </button>
+        </div>
+
+        <!-- Step 3: Transform -->
+        <div class="step-pane" id="step-transform">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <h4><i class="fas fa-drafting-compass text-primary"></i> Visual Transformation Designer</h4>
+
+              <!-- Compact Target Configuration Button -->
+              <button class="btn btn-sm btn-outline-primary" onclick="openTargetConfigModal()" id="targetConfigButton">
+                <i class="fas fa-bullseye"></i>
+                <span id="targetConfigLabel">Define Target</span>
+              </button>
+            </div>
+
+            <div>
+              <button class="btn btn-outline-secondary me-2" onclick="activateStep('metadata')"><i
+                  class="fas fa-arrow-left"></i> Previous</button>
+              <button class="btn btn-primary" onclick="activateStep('vcs')">Next Step <i
+                  class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- Target Path Display (Compact) -->
+          <div id="targetPathDisplay" class="alert alert-info py-2 px-3 mb-3" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fas fa-database"></i>
+                <strong>Target:</strong>
+                <code id="compactTargetPath" class="text-primary">main.dm.table_name</code>
+              </div>
+              <button class="btn btn-sm btn-link text-primary p-0" onclick="openTargetConfigModal()">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            </div>
+          </div>
+
+          <!-- Target Configuration (DW/DM) - Compact Version -->
+          <div class="transform-section target-config mb-3" style="padding: 10px 12px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0" style="font-size: 0.95rem;"><i class="fas fa-bullseye"></i> <span
+                  id="targetConfigTitle">Target Configuration</span></h6>
+              <div id="designTypeBadge" class="badge badge-gold" style="font-size: 0.9rem; padding: 6px 12px;">
+                📊 Building: <strong>Data Mart</strong>
+              </div>
+            </div>
+
+            <!-- Connection Row -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-12">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong><i class="fas fa-plug"></i>
+                    Connection</strong></label>
+                <div class="d-flex align-items-center gap-2">
+                  <select class="form-select form-select-sm" id="designConnectionSelect" style="flex: 1;">
+                    <option value="current" selected>Current: demo-workspace.cloud.databricks.com</option>
+                    <option value="new">Configure New Connection...</option>
+                    <option value="conn1">Production Workspace</option>
+                    <option value="conn2">Development Workspace</option>
+                    <option value="conn3">Staging Workspace</option>
+                  </select>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="activateStep('connect')"
+                    title="Go to Connection Setup">
+                    <i class="fas fa-cog"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <!-- Design Type Selection -->
+              <div class="col-md-3">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Design Type</strong></label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" name="designType" id="designTypeDM" autocomplete="off" checked
+                    onchange="updateDesignType('dm')">
+                  <label class="btn btn-outline-warning btn-sm" for="designTypeDM" style="font-size: 0.85rem;">
+                    <i class="fas fa-chart-pie"></i> Data Mart
+                  </label>
+
+                  <input type="radio" class="btn-check" name="designType" id="designTypeDW" autocomplete="off"
+                    onchange="updateDesignType('dw')">
+                  <label class="btn btn-outline-secondary btn-sm" for="designTypeDW" style="font-size: 0.85rem;">
+                    <i class="fas fa-warehouse"></i> Data Warehouse
+                  </label>
+                </div>
+              </div>
+
+              <!-- DW Table Type Selection (only visible for DW) -->
+              <div class="col-md-3" id="dwTableTypeSection" style="display: none;">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Table Type</strong></label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" name="dwTableType" id="dwTableTypeDim" autocomplete="off"
+                    checked onchange="updateDWTableType('dimension')">
+                  <label class="btn btn-outline-info btn-sm" for="dwTableTypeDim" style="font-size: 0.85rem;">
+                    <i class="fas fa-cube"></i> Dimension
+                  </label>
+
+                  <input type="radio" class="btn-check" name="dwTableType" id="dwTableTypeFact" autocomplete="off"
+                    onchange="updateDWTableType('transaction')">
+                  <label class="btn btn-outline-success btn-sm" for="dwTableTypeFact" style="font-size: 0.85rem;">
+                    <i class="fas fa-table"></i> Fact
+                  </label>
+                </div>
+              </div>
+
+              <!-- Catalog.Schema -->
+              <div class="col-md-2">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Catalog.Schema</strong></label>
+                <select class="form-select form-select-sm" id="dmCatalog" onchange="generateSQL()">
+                  <option value="main.dm" selected>main.dm</option>
+                  <option value="main.staging">main.staging</option>
+                  <option value="analytics.dm">analytics.dm</option>
+                </select>
+              </div>
+
+              <!-- Mode -->
+              <div class="col-md-2">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Mode</strong></label>
+                <select class="form-select form-select-sm" id="createMode" onchange="generateSQL()">
+                  <option value="CREATE OR REPLACE" selected>Overwrite</option>
+                  <option value="CREATE IF NOT EXISTS">Create New</option>
+                  <option value="INSERT INTO">Append</option>
+                </select>
+              </div>
+
+              <!-- Table Name -->
+              <div class="col-md-2">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Table Name <span
+                      class="text-danger">*</span></strong></label>
+                <input type="text" class="form-control form-control-sm" id="dmTableName"
+                  placeholder="e.g., sales_summary" onkeyup="generateSQL()" value="sales_summary">
+                <small class="text-muted" style="font-size: 0.7rem;">Full: <code id="fullTableName"
+                    style="font-size: 0.7rem;">main.dm.sales_summary</code></small>
+              </div>
+            </div>
+
+            <div class="row g-2 mt-1">
+              <!-- Description -->
+              <div class="col-md-12">
+                <label class="form-label mb-1" style="font-size: 0.85rem;"><strong>Description</strong></label>
+                <input type="text" class="form-control form-control-sm" id="dmDescription"
+                  placeholder="Optional description">
+              </div>
+            </div>
+          </div>
+
+          <!-- Visual Designer Interface -->
+          <div class="designer-container">
+            <!-- Left Panel: Table Selector -->
+            <div class="table-selector">
+              <h6 class="mb-3"><i class="fas fa-table"></i> Available Tables</h6>
+              <input type="text" class="form-control form-control-sm mb-3" placeholder="Search tables..."
+                onkeyup="filterTables(this.value)">
+
+              <div id="tableList">
+                <div class="table-item" onclick="addTableToCanvas('dw.customers')" data-table="dw.customers">
+                  <div><strong>customers</strong></div>
+                  <small class="text-muted">dw.customers</small>
+                </div>
+                <div class="table-item" onclick="addTableToCanvas('dw.sales_orders')" data-table="dw.sales_orders">
+                  <div><strong>sales_orders</strong></div>
+                  <small class="text-muted">dw.sales_orders</small>
+                </div>
+                <div class="table-item" onclick="addTableToCanvas('dw.products')" data-table="dw.products">
+                  <div><strong>products</strong></div>
+                  <small class="text-muted">dw.products</small>
+                </div>
+                <div class="table-item" onclick="addTableToCanvas('dw.transactions')" data-table="dw.transactions">
+                  <div><strong>transactions</strong></div>
+                  <small class="text-muted">dw.transactions</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Designer Canvas -->
+            <div class="designer-canvas" id="designerCanvas" ondragover="handleDragOver(event)"
+              ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+
+              <!-- File Drop Overlay -->
+              <div class="file-drop-overlay" id="fileDropOverlay">
+                <div class="file-drop-content">
+                  <i class="fas fa-file-upload"></i>
+                  <h5>Drop CSV or Excel file here</h5>
+                  <p class="mb-0">Supported formats: .csv, .xlsx, .xls</p>
+                </div>
+              </div>
+
+              <div class="text-center text-muted mt-5" id="emptyMessage">
+                <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                <p><strong>Click on tables</strong> from the left panel to add them here</p>
+                <p class="mb-0"><small>or <strong>drag & drop a CSV/Excel file</strong> to create a table from file
+                    data</small></p>
+              </div>
+
+              <!-- Selected Tables will appear here dynamically -->
+              <div id="selectedTables"></div>
+            </div>
+          </div>
+
+          <!-- Transformation Options -->
+          <div class="transform-section">
+            <h6 class="mb-3"><i class="fas fa-cogs"></i> Transformation Options</h6>
+
+            <!-- Dimension Lookups (only for Transaction tables in DW) -->
+            <div id="dimensionLookupSection" style="display: none;" class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                  <strong><i class="fas fa-link"></i> Dimension Lookups</strong>
+                  <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                    title="Join your fact table to dimension tables to enrich transaction data with descriptive attributes"></i>
+                </div>
+                <button class="btn btn-sm btn-outline-success" onclick="addDimensionLookup()">
+                  <i class="fas fa-plus"></i> Add Lookup
+                </button>
+              </div>
+              <div class="alert alert-info py-2 px-3 mb-2" style="font-size: 0.85rem;">
+                <i class="fas fa-lightbulb me-1"></i>
+                <strong>How it works:</strong> Link foreign key columns in your fact table to primary keys in
+                dimension
+                tables.
+                For example: <code>fact_sales.customer_id</code> → <code>dim_customer.customer_id</code>
+              </div>
+              <div id="dimensionLookupList">
+                <!-- Dimension lookups will be added here dynamically -->
+              </div>
+            </div>
+
+            <!-- Computed Columns -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Computed Columns</strong>
+                <button class="btn btn-sm btn-outline-primary" onclick="addComputedColumn()">
+                  <i class="fas fa-plus"></i> Add Column
+                </button>
+              </div>
+              <div id="computedColumns">
+                <!-- Computed columns will be added here -->
+              </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>WHERE Filters</strong>
+                <button class="btn btn-sm btn-outline-primary" onclick="addFilter()">
+                  <i class="fas fa-filter"></i> Add Filter
+                </button>
+              </div>
+              <div id="filterList">
+                <!-- Filters will be added here -->
+              </div>
+            </div>
+
+            <!-- Aggregations -->
+            <div class="mb-3">
+              <strong>Aggregations & GROUP BY</strong>
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" id="enableAggregation" onchange="toggleAggregation()">
+                <label class="form-check-label" for="enableAggregation">
+                  Enable Aggregations
+                </label>
+              </div>
+              <div id="aggregationOptions" style="display:none;" class="mt-3">
+                <textarea class="form-control" rows="3"
+                  placeholder="e.g., SUM(amount), COUNT(order_id), AVG(price)"></textarea>
+                <input type="text" class="form-control mt-2"
+                  placeholder="GROUP BY columns (e.g., region, customer_segment)">
+              </div>
+            </div>
+          </div>
+
+          <details class="transform-section">
+            <summary class="d-flex justify-content-between align-items-center mb-3"
+              style="cursor: pointer; list-style: none;">
+              <h6 class="mb-0"><i class="fas fa-code me-2"></i>Generated Output Preview</h6>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" onclick="event.preventDefault(); generateSQL()">
+                  <i class="fas fa-sync"></i> Refresh
+                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="event.preventDefault();">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+              </div>
+            </summary>
+
+            <ul class="nav nav-tabs mb-2" id="sqlPreviewTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="create-query-tab" data-bs-toggle="tab"
+                  data-bs-target="#tab-create-query" type="button" role="tab">Create Query</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="select-query-tab" data-bs-toggle="tab" data-bs-target="#tab-select-query"
+                  type="button" role="tab">Select Query</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="config-keys-tab" data-bs-toggle="tab" data-bs-target="#tab-config-keys"
+                  type="button" role="tab">Config Keys</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="config-values-tab" data-bs-toggle="tab" data-bs-target="#tab-config-values"
+                  type="button" role="tab">Config Values</button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="sqlPreviewTabsContent">
+              <div class="tab-pane fade show active" id="tab-create-query" role="tabpanel">
+                <pre id="sqlPreviewCreate"
+                  style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto;"><code>-- Generated Create Query will appear here</code></pre>
+              </div>
+              <div class="tab-pane fade" id="tab-select-query" role="tabpanel">
+                <pre id="sqlPreviewSelect"
+                  style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto;"><code>-- Generated Select Query will appear here</code></pre>
+              </div>
+              <div class="tab-pane fade" id="tab-config-keys" role="tabpanel">
+                <pre id="configPreviewKeys"
+                  style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto;"><code>-- Configuration Keys will appear here</code></pre>
+              </div>
+              <div class="tab-pane fade" id="tab-config-values" role="tabpanel">
+                <pre id="configPreviewValues"
+                  style="background: #f8f9fa; padding: 15px; border-radius: 8px; max-height: 300px; overflow-y: auto;"><code>-- Configuration Values will appear here</code></pre>
+              </div>
+            </div>
+          </details>
+
+          <div class="text-center mt-4">
+            <button class="btn btn-primary btn-lg" onclick="saveTransformation()">
+              <i class="fas fa-save"></i> Save Transformation
+            </button>
+            <button class="btn btn-outline-info btn-lg ms-2" onclick="showConfigurationSummary()">
+              <i class="fas fa-file-code"></i> View Configuration
+            </button>
+            <button class="btn btn-outline-secondary btn-lg ms-2" onclick="clearDesigner()">
+              <i class="fas fa-eraser"></i> Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Version Control -->
+        <div class="step-pane" id="step-vcs">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fab fa-github text-primary"></i> Version Control Integration</h4>
+            <div>
+              <button class="btn btn-outline-secondary me-2" onclick="activateStep('transform')"><i
+                  class="fas fa-arrow-left"></i> Previous</button>
+              <button class="btn btn-primary" onclick="activateStep('execute')">Next Step <i
+                  class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Repository:</strong> <code>company/data-pipelines</code></p>
+              <p><strong>Branch:</strong> <code>feature/sales-dm</code></p>
+              <p><strong>File Path:</strong> <code>/partners/12345/dm/sales_summary.sql</code></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Commit Strategy:</strong> Auto-commit</p>
+              <p><strong>Last Commit:</strong> 2 hours ago</p>
+              <p><strong>Committer:</strong> partner_admin</p>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <label><strong>Commit Message:</strong></label>
+            <input type="text" class="form-control" value="Add sales_summary data mart transformation" id="commitMsg">
+          </div>
+          <button class="btn btn-success btn-sm mt-2">
+            <i class="fab fa-github"></i> Push to GitHub
+          </button>
+        </div>
+
+        <!-- Step 5: Execute -->
+        <div class="step-pane" id="step-execute">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fas fa-play-circle text-primary"></i> Databricks Job Execution</h4>
+            <div>
+              <button class="btn btn-outline-secondary me-2" onclick="activateStep('vcs')"><i
+                  class="fas fa-arrow-left"></i> Previous</button>
+
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Job ID:</strong> <code>job_987654321</code></p>
+              <p><strong>API Endpoint:</strong> <code>POST /api/2.1/jobs/run-now</code></p>
+              <p><strong>Cluster Type:</strong> Job Cluster (auto-terminate)</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Instance Type:</strong> i3.xlarge</p>
+              <p><strong>Workers:</strong> 2-8 (auto-scale)</p>
+              <p><strong>DBR Version:</strong> 13.3 LTS</p>
+            </div>
+          </div>
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <strong>Job Configuration Ready</strong>
+            <p class="mb-0 mt-1 small">Your job is configured and ready to run</p>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-success btn-sm" onclick="executeJob()">
+              <i class="fas fa-rocket"></i> Execute Job
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="showScheduleModal()">
+              <i class="fas fa-clock"></i> Schedule Job
+            </button>
+          </div>
+
+          <div class="text-center mt-4">
+            <button class="btn btn-lg btn-primary" onclick="showWorkflowSummary()">
+              <i class="fas fa-download"></i> Export Workflow Configuration
+            </button>
+            <button class="btn btn-lg btn-outline-secondary ms-2">
+              <i class="fas fa-save"></i> Save as Template
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Data Catalog Tab -->
+    <div class="tab-pane fade" id="catalog" role="tabpanel">
+      <h3 class="mb-2"><i class="fas fa-table"></i> Unity Catalog Browser</h3>
+
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <i class="fas fa-folder-tree"></i> Catalog Structure
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <i class="fas fa-database text-primary"></i> <strong>main</strong>
+                  <ul class="list-unstyled ms-3 mt-2">
+                    <li class="mb-1"><i class="fas fa-folder"></i> dw (47 tables)</li>
+                    <li class="mb-1"><i class="fas fa-folder"></i> dm (23 tables)</li>
+                    <li><i class="fas fa-folder"></i> staging (15 tables)</li>
+                  </ul>
+                </li>
+                <li class="list-group-item">
+                  <i class="fas fa-database text-secondary"></i> <strong>analytics</strong>
+                  <ul class="list-unstyled ms-3 mt-2">
+                    <li><i class="fas fa-folder"></i> reports (12 tables)</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-table"></i> Tables in <code>main.dw</code></span>
+                <input type="text" class="form-control form-control-sm" style="width: 250px;"
+                  placeholder="Search tables..." id="catalogSearchInput">
+              </div>
+            </div>
+            <div class="card-body">
+              <table class="table table-hover" id="catalogTable">
+                <thead>
+                  <tr>
+                    <th>Table Name</th>
+                    <th>Rows</th>
+                    <th>Size</th>
+                    <th>Last Modified</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><i class="fas fa-table text-primary"></i> <code>sales_orders</code></td>
+                    <td>2,547,893</td>
+                    <td>1.2 GB</td>
+                    <td>2025-11-03 18:30</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-success"><i class="fas fa-code"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><i class="fas fa-table text-primary"></i> <code>customers</code></td>
+                    <td>150,432</td>
+                    <td>45 MB</td>
+                    <td>2025-11-02 14:22</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-success"><i class="fas fa-code"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><i class="fas fa-table text-primary"></i> <code>products</code></td>
+                    <td>50,234</td>
+                    <td>12 MB</td>
+                    <td>2025-11-01 09:15</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-success"><i class="fas fa-code"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><i class="fas fa-table text-primary"></i> <code>transactions</code></td>
+                    <td>8,123,456</td>
+                    <td>3.8 GB</td>
+                    <td>2025-11-03 20:10</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                      <button class="btn btn-sm btn-outline-success"><i class="fas fa-code"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs Tab -->
+    <div class="tab-pane fade show active" id="jobs" role="tabpanel">
+      <h3 class="mb-2"><i class="fas fa-tasks"></i> Job Execution Dashboard</h3>
+
+      <div class="row mb-2">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h2 class="text-success">24</h2>
+              <p class="mb-0">Active Jobs</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h2 class="text-primary">142</h2>
+              <p class="mb-0">Total Runs Today</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h2 class="text-warning">3</h2>
+              <p class="mb-0">Queued</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h2 class="text-danger">2</h2>
+              <p class="mb-0">Failed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Created Jobs List -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-briefcase"></i> My Created Jobs</span>
+            <div class="d-flex gap-2">
+              <input type="text" class="form-control form-control-sm" style="width: 200px;" placeholder="Search jobs..."
+                id="createdJobsSearch">
+              <button class="btn btn-primary btn-sm" onclick="createNewJob()">
+                <i class="fas fa-plus"></i> Create New Job
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover" id="createdJobsTable">
+              <thead>
+                <tr>
+                  <th>Job Name</th>
+                  <th>Target Table</th>
+                  <th>Schedule</th>
+                  <th>Status</th>
+                  <th>Last Run</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="createdJobsBody">
+                <tr>
+                  <td><strong>sales_summary_dm</strong></td>
+                  <td><code>main.dm.sales_summary</code></td>
+                  <td>
+                    <span class="badge bg-info">
+                      <i class="fas fa-clock"></i> Daily at 2:00 AM
+                    </span>
+                  </td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td>2025-11-03 19:45</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editJob('sales_summary_dm')"
+                      title="Edit Job">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewJobDetails('sales_summary_dm')"
+                      title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="runJobNow('sales_summary_dm')"
+                      title="Run Now">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('sales_summary_dm')"
+                      title="Delete Job">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>customer_360_view</strong></td>
+                  <td><code>main.dm.customer_360</code></td>
+                  <td>
+                    <span class="badge bg-info">
+                      <i class="fas fa-clock"></i> Every 6 hours
+                    </span>
+                  </td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td>2025-11-03 20:15</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editJob('customer_360_view')"
+                      title="Edit Job">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewJobDetails('customer_360_view')"
+                      title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="runJobNow('customer_360_view')"
+                      title="Run Now">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('customer_360_view')"
+                      title="Delete Job">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>product_analytics</strong></td>
+                  <td><code>main.dm.product_metrics</code></td>
+                  <td>
+                    <span class="badge bg-secondary">
+                      <i class="fas fa-hand-paper"></i> Manual Only
+                    </span>
+                  </td>
+                  <td><span class="badge bg-warning">Paused</span></td>
+                  <td>2025-11-03 19:30</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editJob('product_analytics')"
+                      title="Edit Job">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" onclick="viewJobDetails('product_analytics')"
+                      title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="runJobNow('product_analytics')"
+                      title="Run Now">
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('product_analytics')"
+                      title="Delete Job">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-muted small mt-2">
+            <i class="fas fa-info-circle"></i> Click on a job name or use the actions to edit, view details, or
+            manage
+            the job.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-list"></i> Recent Job Runs</span>
+            <div class="d-flex gap-2">
+              <input type="text" class="form-control form-control-sm" style="width: 200px;" placeholder="Search runs..."
+                id="recentRunsSearch">
+              <button class="btn btn-outline-secondary btn-sm" onclick="refreshJobRuns()">
+                <i class="fas fa-sync"></i> Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped" id="recentRunsTable">
+            <thead>
+              <tr>
+                <th>Job Name</th>
+                <th>Run ID</th>
+                <th>Status</th>
+                <th>Duration</th>
+                <th>Started At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>sales_summary_dm</strong></td>
+                <td><code>run_12345</code></td>
+                <td><span class="badge bg-success">Success</span></td>
+                <td>12m 34s</td>
+                <td>2025-11-03 19:45</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i> Logs</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>customer_360_view</strong></td>
+                <td><code>run_12344</code></td>
+                <td><span class="badge bg-primary">Running</span></td>
+                <td>5m 12s</td>
+                <td>2025-11-03 20:15</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-warning"><i class="fas fa-stop"></i> Cancel</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>product_analytics</strong></td>
+                <td><code>run_12343</code></td>
+                <td><span class="badge bg-danger">Failed</span></td>
+                <td>2m 45s</td>
+                <td>2025-11-03 19:30</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger"><i class="fas fa-redo"></i> Retry</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lineage Tab -->
+    <div class="tab-pane fade" id="lineage" role="tabpanel">
+      <h3 class="mb-4"><i class="fas fa-code-branch"></i> Data Lineage Visualization</h3>
+
+      <div class="row">
+        <!-- Left Panel: Job List -->
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-header bg-light">
+              <i class="fas fa-list"></i> Select Job
+            </div>
+            <div class="list-group list-group-flush" id="lineageJobList">
+              <button type="button" class="list-group-item list-group-item-action active"
+                onclick="renderLineage('sales_summary_dm')">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">sales_summary_dm</h6>
+                </div>
+                <small>Target: main.dm.sales_summary</small>
+              </button>
+              <button type="button" class="list-group-item list-group-item-action"
+                onclick="renderLineage('customer_360_view')">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">customer_360_view</h6>
+                </div>
+                <small>Target: main.dm.customer_360</small>
+              </button>
+              <button type="button" class="list-group-item list-group-item-action"
+                onclick="renderLineage('product_analytics')">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">product_analytics</h6>
+                </div>
+                <small>Target: main.dm.product_metrics</small>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Visualization -->
+        <div class="col-md-9">
+          <div class="card h-100">
+            <div class="card-header" id="lineageHeader">
+              <i class="fas fa-project-diagram"></i> Lineage Graph
+            </div>
+            <div class="card-body" id="lineageCanvas">
+              <!-- Dynamic Content will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Monitoring Tab -->
+    <div class="tab-pane fade" id="monitoring" role="tabpanel">
+      <h3 class="mb-4"><i class="fas fa-chart-line"></i> Pipeline Monitoring & Analytics</h3>
+
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body text-center">
+              <div style="font-size: 48px; color: var(--success-color);">98.5%</div>
+              <h6>Success Rate (30 days)</h6>
+              <small class="text-muted">432 successful / 439 total runs</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body text-center">
+              <div style="font-size: 48px; color: var(--primary-color);">14m 23s</div>
+              <h6>Avg Execution Time</h6>
+              <small class="text-muted">Across all pipelines</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body text-center">
+              <div style="font-size: 48px; color: var(--secondary-color);">12.4 GB</div>
+              <h6>Data Processed Today</h6>
+              <small class="text-muted">142 job executions</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-chart-area"></i> Job Execution Trends (Last 7 Days)
+            </div>
+            <div class="card-body">
+              <canvas id="jobTrendsChart" style="height: 300px;"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="fas fa-chart-pie"></i> Resource Usage
+            </div>
+            <div class="card-body">
+              <canvas id="resourceChart" style="height: 300px;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-exclamation-triangle"></i> Recent Alerts & Issues
+        </div>
+        <div class="card-body">
+          <div class="alert alert-warning">
+            <strong><i class="fas fa-clock"></i> Performance Warning:</strong> Job <code>product_analytics</code>
+            took
+            45m (avg: 15m)
+            <div class="mt-2"><small>Triggered at: 2025-11-03 18:45 IST</small></div>
+          </div>
+          <div class="alert alert-danger">
+            <strong><i class="fas fa-times-circle"></i> Job Failed:</strong> <code>inventory_sync</code> failed with
+            error: "Table not found"
+            <div class="mt-2"><small>Triggered at: 2025-11-03 17:30 IST</small></div>
+            <button class="btn btn-sm btn-danger mt-2"><i class="fas fa-bug"></i> Debug</button>
+          </div>
+          <div class="alert alert-info">
+            <strong><i class="fas fa-info-circle"></i> Schema Change Detected:</strong> New column
+            <code>customer_tier</code> added to <code>dw.customers</code>
+            <div class="mt-2"><small>Detected at: 2025-11-03 16:20 IST</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-4 mt-5" style="border-top: 1px solid #e0e0e0; color: #6c757d;">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="mb-1">&copy; 2025 AnvizGnt. All rights reserved.</p>
+          <small>Databricks ELT Platform v2.0.1 | <a href="#" class="text-decoration-none">Privacy Policy</a> | <a
+              href="#" class="text-decoration-none">Terms of Service</a></small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Data Preview Modal -->
+  <div class="modal fade" id="dataPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-table text-primary"></i> <span id="previewModalTitle">Table
+              Preview</span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="previewModalBody">
+          <!-- Table content will be injected here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Target Configuration Modal -->
+  <div class="modal fade" id="targetConfigModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-bullseye text-primary"></i> Configure Target Database
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Info Alert -->
+          <div class="alert alert-info py-2">
+            <i class="fas fa-info-circle"></i>
+            <strong>Target Connection</strong><br>
+            Define where the transformed data should be written. You can use the same connection as the source, select
+            an existing one, or configure a new connection.
+          </div>
+
+          <!-- Target Connection Selection -->
+          <div class="mb-4">
+            <label class="form-label"><strong>Target Connection Mode</strong></label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnSame" value="same" checked
+                onchange="updateTargetConnectionUI()">
+              <label class="btn btn-outline-primary" for="targetConnSame">
+                <i class="fas fa-sync"></i> Same as Source
+              </label>
+
+              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnExisting" value="existing"
+                onchange="updateTargetConnectionUI()">
+              <label class="btn btn-outline-primary" for="targetConnExisting">
+                <i class="fas fa-list"></i> Existing
+              </label>
+
+              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnNew" value="new"
+                onchange="updateTargetConnectionUI()">
+              <label class="btn btn-outline-primary" for="targetConnNew">
+                <i class="fas fa-plus-circle"></i> New
+              </label>
+            </div>
+          </div>
+
+          <!-- Connection Details Section -->
+          <div class="card bg-light mb-4">
+            <div class="card-body p-3">
+              <!-- Same as Source / Existing View -->
+              <div id="targetConnSelectGroup">
+                <label class="form-label"><strong>Connection</strong></label>
+                <select class="form-select" id="targetConnectionSelect" disabled>
+                  <option value="current" selected>Current: demo-workspace.cloud.databricks.com</option>
+                  <option value="conn1">Production Workspace (adb-prod-123)</option>
+                  <option value="conn2">Development Workspace (adb-dev-456)</option>
+                  <option value="conn3">Staging Workspace (adb-stg-789)</option>
+                </select>
+                <small class="text-muted mt-1 d-block" id="targetConnHelp">Using the same connection defined in the
+                  Connect step.</small>
+              </div>
+
+              <!-- New Connection View -->
+              <div id="targetConnNewGroup" style="display: none;">
+                <div class="mb-2">
+                  <label class="form-label small">Workspace URL / Host</label>
+                  <input type="text" class="form-control form-control-sm"
+                    placeholder="https://adb-xxxxxxxx.xx.azuredatabricks.net">
+                </div>
+                <div class="mb-0">
+                  <label class="form-label small">Access Token</label>
+                  <input type="password" class="form-control form-control-sm" placeholder="dapi...">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuration Form -->
+          <div class="row g-3">
+            <!-- Target Catalog -->
+            <div class="col-md-6">
+              <label class="form-label">
+                <strong><i class="fas fa-database"></i> Target Catalog</strong>
+              </label>
+              <select class="form-select" id="targetCatalog" onchange="updateTargetSchemaOptions()">
+                <option value="main" selected>main</option>
+                <option value="analytics">analytics</option>
+                <option value="sandbox">sandbox</option>
+              </select>
+              <small class="text-muted">Unity Catalog to write data</small>
+            </div>
+
+            <!-- Target Schema -->
+            <div class="col-md-6">
+              <label class="form-label">
+                <strong><i class="fas fa-folder"></i> Target Schema</strong>
+              </label>
+              <select class="form-select" id="targetSchema" onchange="updateFullTargetPath()">
+                <option value="dw">dw</option>
+                <option value="dm" selected>dm</option>
+                <option value="staging">staging</option>
+              </select>
+              <small class="text-muted">Schema within the catalog</small>
+            </div>
+          </div>
+
+          <!-- Full Target Path Display -->
+          <div class="mt-4 p-3 bg-light border rounded">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1">
+                <small class="text-muted d-block mb-1">Target Location:</small>
+                <h5 class="mb-0">
+                  <code id="fullTargetPath" class="text-primary">main.dm.[table_from_design]</code>
+                </h5>
+              </div>
+              <div id="targetModeIndicator" class="badge bg-success">
+                <i class="fas fa-check"></i> Ready
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation Messages -->
+          <div id="targetValidation" class="mt-3" style="display: none;"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveTargetConfig()">
+            <i class="fas fa-check"></i> Save Target Configuration
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Visual Transformation Designer - Data & State =====
+    const tableMetadata = {
+      'dw.customers': {
+        columns: [
+          { name: 'customer_id', type: 'INT', isPK: true },
+          { name: 'customer_name', type: 'STRING' },
+          { name: 'region', type: 'STRING' },
+          { name: 'customer_segment', type: 'STRING' },
+          { name: 'email', type: 'STRING' },
+          { name: 'created_date', type: 'DATE' }
+        ]
+      },
+      'dw.sales_orders': {
+        columns: [
+          { name: 'order_id', type: 'INT', isPK: true },
+          { name: 'customer_id', type: 'INT', isFK: true },
+          { name: 'amount', type: 'DECIMAL' },
+          { name: 'order_date', type: 'DATE' },
+          { name: 'status', type: 'STRING' },
+          { name: 'discount', type: 'DECIMAL' }
+        ]
+      },
+      'dw.products': {
+        columns: [
+          { name: 'product_id', type: 'INT', isPK: true },
+          { name: 'product_name', type: 'STRING' },
+          { name: 'category', type: 'STRING' },
+          { name: 'price', type: 'DECIMAL' },
+          { name: 'stock_quantity', type: 'INT' }
+        ]
+      },
+      'dw.transactions': {
+        columns: [
+          { name: 'transaction_id', type: 'INT', isPK: true },
+          { name: 'order_id', type: 'INT', isFK: true },
+          { name: 'product_id', type: 'INT', isFK: true },
+          { name: 'quantity', type: 'INT' },
+          { name: 'total_amount', type: 'DECIMAL' },
+          { name: 'transaction_date', type: 'DATE' }
+        ]
+      }
+    };
+
+    let selectedTables = [];
+    let selectedColumns = {};
+    let columnSchema = {}; // NEW: Store column schema with editable properties
+    let joinConditions = [];
+    let computedColumns = [];
+    let filters = [];
+    let computedColumnCounter = 0;
+    let filterCounter = 0;
+
+    // Data type options for Databricks
+    const dataTypes = [
+      'STRING', 'VARCHAR', 'INT', 'BIGINT', 'SMALLINT', 'TINYINT',
+      'DECIMAL', 'DOUBLE', 'FLOAT', 'DATE', 'TIMESTAMP',
+      'BOOLEAN', 'BINARY', 'ARRAY', 'MAP', 'STRUCT'
+    ];
+
+    // Horizontal Stepper Logic
+    function activateStep(stepId) {
+      // Update Stepper Header
+      document.querySelectorAll('.stepper-step').forEach(step => {
+        step.classList.remove('active');
+        // Mark previous steps as completed
+        // This is a simple implementation, you might want more complex logic based on actual completion
+      });
+
+      // Find the clicked step and activate it
+      const clickedStep = Array.from(document.querySelectorAll('.stepper-step')).find(step =>
+        step.getAttribute('onclick').includes(`'${stepId}'`)
+      );
+      if (clickedStep) {
+        clickedStep.classList.add('active');
+      }
+
+      // Show Content Pane
+      document.querySelectorAll('.step-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+      const activePane = document.getElementById(`step-${stepId}`);
+      activePane.classList.add('active');
+
+      // Scroll to the work area (step content) instead of header
+      // Wait a moment for the pane to become visible
+      setTimeout(() => {
+        const stepContent = document.getElementById(`step-${stepId}`);
+        if (stepContent) {
+          // Scroll to position the work area in view, not the header
+          const yOffset = -20; // Small offset from top
+          const y = stepContent.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+
+    function toggleConnectionMode(mode) {
+      if (mode === 'api') {
+        document.getElementById('api-fields').style.display = 'block';
+        document.getElementById('jdbc-fields').style.display = 'none';
+      } else {
+        document.getElementById('api-fields').style.display = 'none';
+        document.getElementById('jdbc-fields').style.display = 'block';
+      }
+    }
+
+    // Update design type (DW/DM)
+    function updateDesignType(type) {
+      const catalogSelect = document.getElementById('dmCatalog');
+      const tableNameInput = document.getElementById('dmTableName');
+      const designTypeBadge = document.getElementById('designTypeBadge');
+      const targetConfigTitle = document.getElementById('targetConfigTitle');
+      const dwTableTypeSection = document.getElementById('dwTableTypeSection');
+      const dimensionLookupSection = document.getElementById('dimensionLookupSection');
+
+      // Get the container for the title to apply background style
+      const titleContainer = targetConfigTitle.closest('.transform-section.target-config');
+
+      if (type === 'dw') {
+        // Data Warehouse options
+        catalogSelect.innerHTML = `
+          <option value="main.dw" selected>main.dw</option>
+          <option value="main.staging">main.staging</option>
+          <option value="main.raw">main.raw</option>
+          <option value="analytics.dw">analytics.dw</option>
+        `;
+        tableNameInput.placeholder = 'e.g., fact_sales, dim_customer, bridge_account';
+        tableNameInput.value = 'dim_customer';
+
+        // Update badge - check which table type is selected
+        const isDimension = document.getElementById('dwTableTypeDim').checked;
+        const tableType = isDimension ? 'Dimension Table' : 'Fact Table';
+        designTypeBadge.innerHTML = `🏢 Building: <strong>Data Warehouse (${tableType})</strong>`;
+        designTypeBadge.className = 'badge badge-silver';
+
+        targetConfigTitle.innerHTML = 'Target Data Warehouse Configuration';
+        targetConfigTitle.parentElement.className = 'mb-0 theme-silver';
+        targetConfigTitle.parentElement.querySelector('i').className = 'fas fa-warehouse me-2';
+
+        // Show DW table type selector
+        dwTableTypeSection.style.display = 'block';
+
+        // Check if fact table is selected to show dimension lookups
+        if (!isDimension) {
+          dimensionLookupSection.style.display = 'block';
+        } else {
+          dimensionLookupSection.style.display = 'none';
+        }
+      } else {
+        // Data Mart options
+        catalogSelect.innerHTML = `
+          <option value="main.dm" selected>main.dm</option>
+          <option value="main.staging">main.staging</option>
+          <option value="analytics.dm">analytics.dm</option>
+        `;
+        tableNameInput.placeholder = 'e.g., sales_summary, customer_360';
+        tableNameInput.value = 'sales_summary';
+
+        // Update badge
+        designTypeBadge.innerHTML = '📊 Building: <strong>Data Mart</strong>';
+        designTypeBadge.className = 'badge badge-gold';
+
+        targetConfigTitle.innerHTML = 'Target Data Mart Configuration';
+        targetConfigTitle.parentElement.className = 'mb-0 theme-gold';
+        targetConfigTitle.parentElement.querySelector('i').className = 'fas fa-bullseye me-2';
+
+        // Hide DW-specific sections
+        dwTableTypeSection.style.display = 'none';
+        dimensionLookupSection.style.display = 'none';
+      }
+
+      // Trigger SQL regeneration if the function exists
+      if (typeof generateSQL === 'function') {
+        generateSQL();
+      }
+    }
+
+    // Update DW table type (Dimension/Transaction)
+    function updateDWTableType(type) {
+      const tableNameInput = document.getElementById('dmTableName');
+      const dimensionLookupSection = document.getElementById('dimensionLookupSection');
+      const designTypeBadge = document.getElementById('designTypeBadge');
+
+      if (type === 'dimension') {
+        tableNameInput.placeholder = 'e.g., dim_customer, dim_product, dim_location';
+        tableNameInput.value = 'dim_customer';
+        designTypeBadge.innerHTML = '🏢 Building: <strong>Data Warehouse (Dimension Table)</strong>';
+        dimensionLookupSection.style.display = 'none';
+      } else {
+        tableNameInput.placeholder = 'e.g., fact_sales, fact_orders, bridge_account_contact';
+        tableNameInput.value = 'fact_sales';
+        designTypeBadge.innerHTML = '🏢 Building: <strong>Data Warehouse (Fact Table)</strong>';
+        dimensionLookupSection.style.display = 'block';
+      }
+
+      // Trigger SQL regeneration
+      if (typeof generateSQL === 'function') {
+        generateSQL();
+      }
+    }
+
+    // Counter for dimension lookups
+    let dimensionLookupCounter = 0;
+
+    // Get columns from selected source tables
+    function getSourceTableColumns() {
+      const columns = [];
+
+      // Get columns from all selected tables
+      selectedTables.forEach(tableName => {
+        if (tableMetadata[tableName]) {
+          tableMetadata[tableName].columns.forEach(col => {
+            const tableAlias = tableName.split('.')[1];
+            // Include all columns, but prioritize FK columns
+            const displayName = `${tableAlias}.${col.name}`;
+            const columnInfo = {
+              value: col.name,
+              label: displayName,
+              isFK: col.isFK || false,
+              isPK: col.isPK || false
+            };
+            columns.push(columnInfo);
+          });
+        }
+      });
+
+      // If no tables selected, return empty array
+      if (columns.length === 0) {
+        return [];
+      }
+
+      // Sort to show FK columns first
+      columns.sort((a, b) => {
+        if (a.isFK && !b.isFK) return -1;
+        if (!a.isFK && b.isFK) return 1;
+        return a.label.localeCompare(b.label);
+      });
+
+      return columns;
+    }
+
+    // Get available dimension tables from schema
+    function getDimensionTables() {
+      // Check if DW design type is selected
+      const isDW = document.getElementById('designTypeDW') && document.getElementById('designTypeDW').checked;
+
+      if (isDW) {
+        // Return dimension tables from DW schema
+        return [
+          { value: 'main.dw.dim_customer', label: 'dim_customer' },
+          { value: 'main.dw.dim_product', label: 'dim_product' },
+          { value: 'main.dw.dim_location', label: 'dim_location' },
+          { value: 'main.dw.dim_date', label: 'dim_date' },
+          { value: 'main.dw.dim_employee', label: 'dim_employee' },
+          { value: 'main.dw.dim_account', label: 'dim_account' }
+        ];
+      }
+      return [];
+    }
+
+    // Add dimension lookup
+    function addDimensionLookup() {
+      dimensionLookupCounter++;
+      const id = `dimLookup-${dimensionLookupCounter}`;
+
+      // Get available columns and dimension tables
+      const sourceColumns = getSourceTableColumns();
+      const dimensionTables = getDimensionTables();
+
+      // Check if we have the necessary data
+      if (sourceColumns.length === 0) {
+        showNotification('Please add source tables first before creating dimension lookups', 'warning');
+        return;
+      }
+
+      if (dimensionTables.length === 0) {
+        showNotification('No dimension tables available. Make sure you are in Data Warehouse mode with Fact table selected.', 'warning');
+        return;
+      }
+
+      // Build column options with FK indication
+      const columnOptions = sourceColumns.map(col => {
+        const fkIndicator = col.isFK ? ' 🔑' : '';
+        return `<option value="${col.value}">${col.label}${fkIndicator}</option>`;
+      }).join('');
+
+      // Build dimension table options
+      const dimTableOptions = dimensionTables.map(dim =>
+        `<option value="${dim.value}">${dim.label}</option>`
+      ).join('');
+
+      const html = `
+        <div class="alert alert-light border mb-2" id="${id}">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <strong><i class="fas fa-link me-1"></i>Lookup #${dimensionLookupCounter}</strong>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeDimensionLookup('${id}')"
+                    title="Remove this lookup">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="row g-2">
+            <div class="col-md-3">
+              <label class="form-label small mb-1">
+                <strong>1. Foreign Key</strong>
+                <i class="fas fa-question-circle text-muted ms-1" data-bs-toggle="tooltip"
+                   title="Select the column in your fact table that references the dimension"></i>
+              </label>
+              <select class="form-select form-select-sm" id="${id}-fk" onchange="generateSQL()">
+                <option value="">Choose fact column...</option>
+                ${columnOptions}
+              </select>
+              <small class="text-muted" style="font-size: 0.7rem;">
+                <i class="fas fa-table me-1"></i>From fact table (🔑 = FK)
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small mb-1">
+                <strong>2. Dimension Table</strong>
+                <i class="fas fa-question-circle text-muted ms-1" data-bs-toggle="tooltip"
+                   title="Select which dimension table to join"></i>
+              </label>
+              <select class="form-select form-select-sm" id="${id}-dim" onchange="updateDimensionColumns('${id}'); generateSQL()">
+                <option value="">Choose dimension...</option>
+                ${dimTableOptions}
+              </select>
+              <small class="text-muted" style="font-size: 0.7rem;">
+                <i class="fas fa-database me-1"></i>Target dimension
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small mb-1">
+                <strong>3. Join Key</strong>
+                <i class="fas fa-question-circle text-muted ms-1" data-bs-toggle="tooltip"
+                   title="Select the primary key column in the dimension table"></i>
+              </label>
+              <select class="form-select form-select-sm" id="${id}-dimkey" onchange="generateSQL()">
+                <option value="">Choose key column...</option>
+              </select>
+              <small class="text-muted" style="font-size: 0.7rem;">
+                <i class="fas fa-key me-1"></i>Dimension PK
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small mb-1">
+                <strong>4. Join Type</strong>
+                <i class="fas fa-question-circle text-muted ms-1" data-bs-toggle="tooltip"
+                   title="INNER: Only matching rows | LEFT: All fact rows | RIGHT: All dimension rows"></i>
+              </label>
+              <select class="form-select form-select-sm" id="${id}-join" onchange="generateSQL()">
+                <option value="INNER" selected>INNER (matching only)</option>
+                <option value="LEFT">LEFT (all fact rows)</option>
+                <option value="RIGHT">RIGHT (all dim rows)</option>
+              </select>
+              <small class="text-muted" style="font-size: 0.7rem;">
+                <i class="fas fa-code-branch me-1"></i>Join strategy
+              </small>
+            </div>
+          </div>
+          <div class="mt-2 p-2 bg-light rounded" style="font-size: 0.75rem;">
+            <i class="fas fa-info-circle text-primary me-1"></i>
+            <strong>Result:</strong> <code>fact_table.${id}-fk</code> = <code>dimension_table.${id}-dimkey</code>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('dimensionLookupList').insertAdjacentHTML('beforeend', html);
+
+      // Initialize Bootstrap tooltips for the new lookup
+      const tooltips = document.querySelectorAll(`#${id} [data-bs-toggle="tooltip"]`);
+      tooltips.forEach(el => new bootstrap.Tooltip(el));
+    }
+
+    // Update dimension columns when dimension table is selected
+    function updateDimensionColumns(lookupId) {
+      const dimTable = document.getElementById(`${lookupId}-dim`).value;
+      const dimKeySelect = document.getElementById(`${lookupId}-dimkey`);
+
+      // In production, fetch actual columns from the selected dimension table
+      // For now, use mock data based on table name
+      let columns = [];
+
+      if (dimTable.includes('dim_customer')) {
+        columns = ['customer_id', 'customer_key', 'customer_sk'];
+      } else if (dimTable.includes('dim_product')) {
+        columns = ['product_id', 'product_key', 'product_sk'];
+      } else if (dimTable.includes('dim_location')) {
+        columns = ['location_id', 'location_key', 'location_sk'];
+      } else if (dimTable.includes('dim_date')) {
+        columns = ['date_id', 'date_key', 'date_sk'];
+      } else {
+        columns = ['id', 'key', 'surrogate_key'];
+      }
+
+      // Update dimension key dropdown
+      dimKeySelect.innerHTML = '<option value="">Select key...</option>' +
+        columns.map(col => `<option value="${col}">${col}</option>`).join('');
+    }
+
+    // Remove dimension lookup
+    function removeDimensionLookup(id) {
+      document.getElementById(id).remove();
+      if (typeof generateSQL === 'function') {
+        generateSQL();
+      }
+    }
+
+
+
+    // Initialize first step
+    // activateStep('connect'); // Already set in HTML
+
+    // Connection Management Functions
+    function updateMetadataConnection() {
+      const selector = document.getElementById('metaConnectionSelect');
+      const selectedConnection = selector.value;
+
+      console.log('Metadata connection changed to:', selectedConnection);
+
+      if (selectedConnection === 'new') {
+        // Navigate to connection setup only for new connection
+        activateStep('connect');
+        // Reset the selector after navigation
+        setTimeout(() => {
+          selector.value = 'current';
+        }, 100);
+        return;
+      }
+
+      // For existing connections, just switch without navigation
+      const connectionNames = {
+        'current': 'demo-workspace',
+        'conn1': 'Production Workspace',
+        'conn2': 'Development Workspace',
+        'conn3': 'Staging Workspace'
+      };
+
+      const connectionName = connectionNames[selectedConnection] || selectedConnection;
+      showNotification(`Switched to connection: ${connectionName}`, 'info');
+
+      // Update the design screen selector to match
+      const designSelector = document.getElementById('designConnectionSelect');
+      if (designSelector) {
+        designSelector.value = selectedConnection;
+      }
+    }
+
+    function updateDesignConnection() {
+      const selector = document.getElementById('designConnectionSelect');
+      const selectedConnection = selector.value;
+
+      console.log('Design connection changed to:', selectedConnection);
+
+      if (selectedConnection === 'new') {
+        // Navigate to connection setup only for new connection
+        activateStep('connect');
+        // Reset the selector after navigation
+        setTimeout(() => {
+          selector.value = 'current';
+        }, 100);
+        return;
+      }
+
+      // For existing connections, just switch without navigation
+      const connectionNames = {
+        'current': 'demo-workspace.cloud.databricks.com',
+        'conn1': 'Production Workspace',
+        'conn2': 'Development Workspace',
+        'conn3': 'Staging Workspace'
+      };
+
+      const connectionName = connectionNames[selectedConnection] || selectedConnection;
+      showNotification(`Switched to connection: ${connectionName}`, 'info');
+
+      // Update the metadata screen selector to match
+      const metaSelector = document.getElementById('metaConnectionSelect');
+      if (metaSelector) {
+        metaSelector.value = selectedConnection;
+      }
+
+      // Regenerate SQL with new connection context
+      if (typeof generateSQL === 'function') {
+        generateSQL();
+      }
+    }
+
+    // Existing Functions (kept for compatibility)
+    function toggleDetails(btn) {
+      // No longer needed in horizontal mode, but kept to prevent errors if called
+      console.log('Toggle details deprecated in horizontal mode');
+    }
+
+    function testConnection() {
+      const btn = document.getElementById('btnTestConnection');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+      btn.disabled = true;
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          document.getElementById('connectionStatus').className = 'connection-status connected';
+          document.getElementById('connectionText').innerText = 'Connected to demo-workspace';
+          document.getElementById('connectionText').classList.add('text-success', 'fw-bold');
+
+
+
+          btn.innerHTML = '<i class="fas fa-check"></i> Connection Verified';
+          btn.classList.remove('btn-outline-primary');
+          btn.classList.add('btn-success');
+
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+            btn.disabled = false;
+            resolve(true);
+          }, 2000);
+        }, 1500);
+      });
+    }
+
+    async function saveAndLoadMetadata() {
+      const btn = document.getElementById('btnSaveLoad');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      btn.disabled = true;
+
+      // First verify connection if not already done (simplified check)
+      if (!document.getElementById('connectionStatus').classList.contains('connected')) {
+        await testConnection();
+      }
+
+      btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+
+      // Mark step as completed in header
+      document.querySelector('.stepper-step[onclick*="connect"]').classList.add('completed');
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        activateStep('metadata');
+      }, 1000);
+    }
+
+    function connectToDatabricks() {
+      // Deprecated, redirected to saveAndLoadMetadata for backward compatibility if called
+      saveAndLoadMetadata();
+    }
+
+    function updateSchemaOptions() {
+      const catalog = document.getElementById('metaCatalogSelect').value;
+      const schemaSelect = document.getElementById('metaSchemaSelect');
+
+      // Clear existing options
+      schemaSelect.innerHTML = '<option value="all" selected>All Schemas</option>';
+
+      // Add schemas based on selected catalog
+      if (catalog === 'main') {
+        schemaSelect.innerHTML += '<option value="dw">dw</option>';
+        schemaSelect.innerHTML += '<option value="dm">dm</option>';
+        schemaSelect.innerHTML += '<option value="staging">staging</option>';
+      } else if (catalog === 'analytics') {
+        schemaSelect.innerHTML += '<option value="reports">reports</option>';
+        schemaSelect.innerHTML += '<option value="dashboards">dashboards</option>';
+      } else if (catalog === 'sandbox') {
+        schemaSelect.innerHTML += '<option value="dev">dev</option>';
+        schemaSelect.innerHTML += '<option value="test">test</option>';
+      }
+    }
+
+    function loadMetadata() {
+      // Get selected catalog and schema
+      const selectedCatalog = document.getElementById('metaCatalogSelect').value;
+      const selectedSchema = document.getElementById('metaSchemaSelect').value;
+
+      // Find the button relative to the function call or by ID if possible, 
+      // but here we can just target the specific button we added
+      const btn = document.querySelector('#step-metadata button[onclick="loadMetadata()"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
+
+      setTimeout(() => {
+        // Update UI with selected catalog info
+        document.getElementById('metaCatalog').innerText = selectedCatalog;
+
+        // Simulate different data based on catalog and schema
+        let schemaCount = '3';
+        let tableCount = '47';
+
+        if (selectedCatalog === 'analytics') {
+          schemaCount = selectedSchema === 'all' ? '2' : '1';
+          tableCount = selectedSchema === 'all' ? '24' : '12';
+        } else if (selectedSchema !== 'all') {
+          schemaCount = '1';
+          tableCount = selectedSchema === 'dw' ? '47' : (selectedSchema === 'dm' ? '23' : '15');
+        }
+
+        document.getElementById('schemaCount').innerText = schemaCount;
+        document.getElementById('tableCount').innerText = tableCount;
+
+        btn.innerHTML = '<i class="fas fa-check"></i> Metadata Refreshed';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+
+        // Mark step as completed
+        document.querySelector('.stepper-step[onclick*="metadata"]').classList.add('completed');
+      }, 1500);
+    }
+
+    function executeJob() {
+      const btn = event.target;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i> Job Started Successfully';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-success');
+        document.querySelector('.stepper-step[onclick*="execute"]').classList.add('completed');
+        // Removed auto-advance to monitor step as it was removed
+      }, 1500);
+    }
+
+    // File Drop Functionality
+    let fileSourceCounter = 0;
+    const fileSources = [];
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const canvas = document.getElementById('designerCanvas');
+      const overlay = document.getElementById('fileDropOverlay');
+      canvas.classList.add('drag-over');
+      overlay.classList.add('active');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      // Only remove if leaving the canvas entirely
+      if (e.target.id === 'designerCanvas') {
+        const canvas = document.getElementById('designerCanvas');
+        const overlay = document.getElementById('fileDropOverlay');
+        canvas.classList.remove('drag-over');
+        overlay.classList.remove('active');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const canvas = document.getElementById('designerCanvas');
+      const overlay = document.getElementById('fileDropOverlay');
+      canvas.classList.remove('drag-over');
+      overlay.classList.remove('active');
+
+      const files = e.dataTransfer.files;
+      if (files.length === 0) return;
+
+      // Process each dropped file
+      Array.from(files).forEach(file => {
+        const fileName = file.name;
+        const fileExt = fileName.split('.').pop().toLowerCase();
+
+        if (['csv', 'xlsx', 'xls'].includes(fileExt)) {
+          parseFile(file);
+        } else {
+          alert(`Unsupported file type: ${fileExt}. Please upload CSV or Excel files.`);
+        }
+      });
+    }
+
+    function parseFile(file) {
+      const reader = new FileReader();
+      const fileName = file.name;
+      const fileExt = fileName.split('.').pop().toLowerCase();
+
+      reader.onload = function (e) {
+        const content = e.target.result;
+
+        if (fileExt === 'csv') {
+          parseCSV(content, fileName);
+        } else {
+          // For Excel files, show a simplified version
+          // In production, you'd use a library like SheetJS
+          alert('Excel parsing requires additional library. Please use CSV for now.');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function parseCSV(content, fileName) {
+      const lines = content.split('\n').filter(line => line.trim());
+      if (lines.length === 0) {
+        alert('File is empty');
+        return;
+      }
+
+      // Parse header row
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+
+      // Parse data rows (first 5 for preview)
+      const dataRows = [];
+      for (let i = 1; i < Math.min(6, lines.length); i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        dataRows.push(values);
+      }
+
+      // Infer data types from first data row
+      const columns = headers.map((header, index) => {
+        const sampleValue = dataRows[0]?.[index] || '';
+        let dataType = 'STRING';
+
+        if (!isNaN(sampleValue) && sampleValue !== '') {
+          dataType = sampleValue.includes('.') ? 'DOUBLE' : 'BIGINT';
+        } else if (sampleValue.match(/^\d{4}-\d{2}-\d{2}/)) {
+          dataType = 'DATE';
+        }
+
+        return {
+          name: header || `column_${index + 1}`,
+          type: dataType,
+          nullable: true
+        };
+      });
+
+      // Create file source object
+      const fileSource = {
+        id: `file_${++fileSourceCounter}`,
+        fileName: fileName,
+        tableName: fileName.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_]/g, '_'),
+        columns: columns,
+        preview: dataRows,
+        rowCount: lines.length - 1
+      };
+
+      // Initialize column schema for file source
+      if (!columnSchema[fileSource.id]) columnSchema[fileSource.id] = {};
+      columns.forEach(col => {
+        columnSchema[fileSource.id][col.name] = {
+          originalName: col.name,
+          name: col.name,
+          dataType: col.type.toUpperCase(),
+          length: null,
+          precision: null,
+          scale: null,
+          nullable: col.nullable,
+          isPK: false
+        };
+      });
+
+      fileSources.push(fileSource);
+      addFileToCanvas(fileSource);
+    }
+
+    function addFileToCanvas(fileSource) {
+      const selectedTables = document.getElementById('selectedTables');
+      const emptyMessage = document.getElementById('emptyMessage');
+
+      // Hide empty message
+      if (emptyMessage) {
+        emptyMessage.style.display = 'none';
+      }
+
+      const tableCard = document.createElement('div');
+      tableCard.className = 'table-card file-source';
+      tableCard.id = fileSource.id;
+      tableCard.innerHTML = `
+        <div class="table-card-header">
+          <div>
+            <i class="fas fa-file text-warning"></i>
+            <span class="table-card-title">${fileSource.tableName}</span>
+            <small class="text-muted ms-2"><i class="fas fa-file-csv"></i> ${fileSource.fileName} • ${fileSource.rowCount} rows</small>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="showFilePreview('${fileSource.id}')" title="Preview Data">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="removeFileSource('${fileSource.id}')" title="Remove File">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="mb-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="selectAllFileColumns('${fileSource.id}')">
+            Select All
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="deselectAllFileColumns('${fileSource.id}')">
+            Deselect All
+          </button>
+        </div>
+        <div class="column-list">
+          ${fileSource.columns.map((col, index) => `
+            <div class="column-schema-row p-1 border-bottom" data-table="${fileSource.id}" data-column="${col.name}">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                  <input type="checkbox" class="column-checkbox me-2" 
+                         id="${fileSource.id}_col_${index}"
+                         data-table="${fileSource.id}" 
+                         data-column="${col.name}" 
+                         checked>
+                  <span class="col-name-text fw-bold text-dark" style="font-size: 0.85rem;">${col.name}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <small class="text-muted col-type-text" style="font-size: 0.75rem;">${col.type}</small>
+                  <button class="btn btn-sm btn-link text-primary p-0" 
+                          onclick="openFileColumnEditor('${fileSource.id}', '${col.name}')" 
+                          title="Edit Column Configuration">
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      selectedTables.appendChild(tableCard);
+    }
+
+    function removeFileSource(fileId) {
+      const index = fileSources.findIndex(f => f.id === fileId);
+      if (index > -1) {
+        fileSources.splice(index, 1);
+      }
+
+      const card = document.getElementById(fileId);
+      if (card) {
+        card.remove();
+      }
+
+      // Show empty message if no tables
+      const selectedTables = document.getElementById('selectedTables');
+      const emptyMessage = document.getElementById('emptyMessage');
+      if (selectedTables.children.length === 0 && emptyMessage) {
+        emptyMessage.style.display = 'block';
+      }
+    }
+
+    // Show file preview in modal
+    function showFilePreview(fileId) {
+      const fileSource = fileSources.find(f => f.id === fileId);
+      if (!fileSource) {
+        alert('File source not found');
+        return;
+      }
+
+      let previewHeader = '<thead><tr>';
+      fileSource.columns.forEach(col => {
+        previewHeader += `<th>${col.name}</th>`;
+      });
+      previewHeader += '</tr></thead>';
+
+      let previewBody = '<tbody>';
+      fileSource.preview.forEach(row => {
+        previewBody += '<tr>';
+        row.forEach(cell => {
+          previewBody += `<td>${cell || ''}</td>`;
+        });
+        previewBody += '</tr>';
+      });
+      previewBody += '</tbody>';
+
+      const tableHtml = `
+        <div class="preview-table-container" style="max-height: 400px; margin-top: 0;">
+          <table class="table table-sm table-bordered table-hover table-striped">
+            ${previewHeader}
+            ${previewBody}
+          </table>
+        </div>
+      `;
+
+      $('#previewModalTitle').text(`Data Preview: ${fileSource.fileName}`);
+      $('#previewModalBody').html(tableHtml);
+
+      const modal = new bootstrap.Modal(document.getElementById('dataPreviewModal'));
+      modal.show();
+    }
+
+    // Select all columns for a file
+    function selectAllFileColumns(fileId) {
+      $(`input[data-table="${fileId}"]`).prop('checked', true);
+    }
+
+    // Deselect all columns for a file
+    function deselectAllFileColumns(fileId) {
+      $(`input[data-table="${fileId}"]`).prop('checked', false);
+    }
+
+    // Open column editor for file columns
+    function openFileColumnEditor(fileId, columnName) {
+      currentEditTable = fileId;
+      currentEditColumn = columnName;
+      const schema = columnSchema[fileId][columnName];
+
+      $('#editTableName').val(fileId);
+      $('#editOriginalName').val(columnName);
+      $('#editColumnName').val(schema.name);
+
+      // Populate Data Types
+      const typeSelect = $('#editColumnType');
+      typeSelect.empty();
+      dataTypes.forEach(dt => {
+        typeSelect.append(new Option(dt, dt));
+      });
+      typeSelect.val(schema.dataType);
+
+      $('#editColumnLength').val(schema.length || '');
+      $('#editColumnPrecision').val(schema.precision || '');
+      $('#editColumnScale').val(schema.scale || '');
+      $('#editColumnNullable').prop('checked', schema.nullable);
+
+      toggleEditTypeFields();
+
+      const modal = new bootstrap.Modal(document.getElementById('columnEditModal'));
+      modal.show();
+    }
+
+    // ===== Target Configuration Functions =====
+
+    function openTargetConfigModal() {
+      // Initialize with current values or defaults
+      // Use dmTableName from the main design section
+      const currentTableName = document.getElementById('dmTableName').value;
+
+      if (!currentTableName && selectedTables.length > 0) {
+        autoGenerateTableName();
+      }
+
+      // Initialize UI state
+      updateTargetConnectionUI();
+      updateFullTargetPath();
+
+      const modal = new bootstrap.Modal(document.getElementById('targetConfigModal'));
+      modal.show();
+    }
+
+    function updateTargetConnectionUI() {
+      const mode = document.querySelector('input[name="targetConnectionMode"]:checked').value;
+      const selectGroup = document.getElementById('targetConnSelectGroup');
+      const newGroup = document.getElementById('targetConnNewGroup');
+      const connSelect = document.getElementById('targetConnectionSelect');
+      const helpText = document.getElementById('targetConnHelp');
+
+      if (mode === 'same') {
+        selectGroup.style.display = 'block';
+        newGroup.style.display = 'none';
+        connSelect.disabled = true;
+        connSelect.value = 'current';
+        helpText.textContent = 'Using the same connection defined in the Connect step.';
+      } else if (mode === 'existing') {
+        selectGroup.style.display = 'block';
+        newGroup.style.display = 'none';
+        connSelect.disabled = false;
+        helpText.textContent = 'Select a pre-configured connection from the list.';
+      } else if (mode === 'new') {
+        selectGroup.style.display = 'none';
+        newGroup.style.display = 'block';
+      }
+    }
+
+    function updateTargetSchemaOptions() {
+      const catalog = document.getElementById('targetCatalog').value;
+      const schemaSelect = document.getElementById('targetSchema');
+
+      // Clear existing options
+      schemaSelect.innerHTML = '';
+
+      // Add schemas based on selected catalog
+      if (catalog === 'main') {
+        schemaSelect.innerHTML = `
+          <option value="dw">dw</option>
+          <option value="dm" selected>dm</option>
+          <option value="staging">staging</option>
+        `;
+      } else if (catalog === 'analytics') {
+        schemaSelect.innerHTML = `
+          <option value="reports">reports</option>
+          <option value="dashboards">dashboards</option>
+        `;
+      } else if (catalog === 'sandbox') {
+        schemaSelect.innerHTML = `
+          <option value="dev">dev</option>
+          <option value="test">test</option>
+        `;
+      }
+
+      updateFullTargetPath();
+    }
+
+    function updateFullTargetPath() {
+      const catalog = document.getElementById('targetCatalog')?.value || 'main';
+      const schema = document.getElementById('targetSchema')?.value || 'dm';
+      // Use dmTableName from the main design section
+      const tableName = document.getElementById('dmTableName')?.value || 'table_name';
+
+      const fullPath = `${catalog}.${schema}.${tableName}`;
+      document.getElementById('fullTargetPath').textContent = fullPath;
+
+      // Also update compact display
+      if (document.getElementById('compactTargetPath')) {
+        document.getElementById('compactTargetPath').textContent = fullPath;
+      }
+    }
+
+    function autoGenerateTableName() {
+      if (selectedTables.length === 0) {
+        alert('Please add at least one source table first');
+        return;
+      }
+
+      // Generate table name based on selected source tables
+      const baseName = selectedTables[0].split('.').pop(); // Get table name without schema
+      const suggestedName = `${baseName}_transformed`;
+
+      // Update the main design section input
+      document.getElementById('dmTableName').value = suggestedName;
+      updateFullTargetPath();
+    }
+
+    function saveTargetConfig() {
+      // Use dmTableName from the main design section
+      const tableName = document.getElementById('dmTableName').value.trim();
+
+      // Validation
+      if (!tableName) {
+        document.getElementById('targetValidation').innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i> Please enter a table name in the Design section
+          </div>
+        `;
+        document.getElementById('targetValidation').style.display = 'block';
+        return;
+      }
+
+      // Validate table name (alphanumeric and underscores only)
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        document.getElementById('targetValidation').innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i> Table name must start with a letter or underscore and contain only letters, numbers, and underscores
+          </div>
+        `;
+        document.getElementById('targetValidation').style.display = 'block';
+        return;
+      }
+
+      // Update button label to show configured state
+      const fullPath = document.getElementById('fullTargetPath').textContent;
+      document.getElementById('targetConfigLabel').innerHTML = `<i class="fas fa-check-circle text-success"></i> ${fullPath}`;
+
+      // Show compact display
+      document.getElementById('targetPathDisplay').style.display = 'block';
+
+      // Hide validation
+      document.getElementById('targetValidation').style.display = 'none';
+
+      // Close modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('targetConfigModal'));
+      modal.hide();
+
+      // Regenerate SQL with new target
+      generateSQL();
+    }
+
+    // ... (Keep other existing functions like generateSQL, addTableToCanvas etc.) ...
+
+    // Mock functions for the designer (simplified from original)
+    function filterTables(query) {
+      const tables = document.querySelectorAll('.table-item');
+      tables.forEach(table => {
+        const text = table.innerText.toLowerCase();
+        if (text.includes(query.toLowerCase())) {
+          table.style.display = 'block';
+        } else {
+          table.style.display = 'none';
+        }
+      });
+    }
+
+    // Add table to canvas
+    function generateMockData(tableName, columns) {
+      const mockData = [];
+      for (let i = 0; i < 5; i++) {
+        const row = {};
+        columns.forEach(col => {
+          if (col.name.includes('id')) row[col.name] = Math.floor(Math.random() * 1000) + 1;
+          else if (col.name.includes('name')) row[col.name] = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'][i];
+          else if (col.name.includes('date')) row[col.name] = '2023-01-0' + (i + 1);
+          else if (col.name.includes('amount') || col.name.includes('price')) row[col.name] = (Math.random() * 1000).toFixed(2);
+          else if (col.type === 'int' || col.type === 'bigint') row[col.name] = Math.floor(Math.random() * 100);
+          else row[col.name] = 'Sample ' + (i + 1);
+        });
+        mockData.push(row);
+      }
+      return mockData;
+    }
+
+    function showTablePreview(tableName) {
+      const metadata = tableMetadata[tableName];
+      const mockData = generateMockData(tableName, metadata.columns);
+
+      let previewHeader = '<thead><tr>';
+      metadata.columns.forEach(col => {
+        previewHeader += `<th>${col.name}</th>`;
+      });
+      previewHeader += '</tr></thead>';
+
+      let previewBody = '<tbody>';
+      mockData.forEach(row => {
+        previewBody += '<tr>';
+        metadata.columns.forEach(col => {
+          previewBody += `<td>${row[col.name]}</td>`;
+        });
+        previewBody += '</tr>';
+      });
+      previewBody += '</tbody>';
+
+      const tableHtml = `
+          <div class="preview-table-container" style="max-height: 400px; margin-top: 0;">
+            <table class="table table-sm table-bordered table-hover table-striped">
+              ${previewHeader}
+              ${previewBody}
+            </table>
+          </div>
+        `;
+
+      $('#previewModalTitle').text(`Data Preview: ${tableName}`);
+      $('#previewModalBody').html(tableHtml);
+
+      const modal = new bootstrap.Modal(document.getElementById('dataPreviewModal'));
+      modal.show();
+    }
+
+    function addTableToCanvas(tableName) {
+      if (selectedTables.includes(tableName)) {
+        showNotification('Table already added!', 'warning');
+        return;
+      }
+
+      selectedTables.push(tableName);
+      selectedColumns[tableName] = [];
+
+      // Mark as selected in left panel
+      $(`.table-item[data-table="${tableName}"]`).addClass('selected');
+
+      // Hide empty message
+      $('#emptyMessage').hide();
+
+      // Create table card
+      const metadata = tableMetadata[tableName];
+      const tableAlias = tableName.split('.')[1].charAt(0);
+
+      let columnsHTML = '';
+      metadata.columns.forEach(col => {
+        // Initialize column schema with defaults
+        if (!columnSchema[tableName]) columnSchema[tableName] = {};
+        columnSchema[tableName][col.name] = {
+          originalName: col.name,
+          name: col.name,
+          dataType: col.type.toUpperCase(),
+          length: null,
+          precision: null,
+          scale: null,
+          nullable: !col.isPK,
+          isPK: col.isPK || false
+        };
+
+        const badge = col.isPK ? '<span class="badge bg-primary ms-2">PK</span>' : '';
+
+        columnsHTML += `
+      <div class="column-schema-row p-1 border-bottom" data-table="${tableName}" data-column="${col.name}">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <input type="checkbox" class="column-checkbox me-2" 
+                   data-table="${tableName}" 
+                   data-column="${col.name}" 
+                   onchange="toggleColumn('${tableName}', '${col.name}', this.checked)">
+            <span class="col-name-text fw-bold text-dark" style="font-size: 0.85rem;">${col.name}</span>
+            ${badge}
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <small class="text-muted col-type-text" style="font-size: 0.75rem;">${col.type.toUpperCase()}</small>
+            <button class="btn btn-sm btn-link text-primary p-0" 
+                    onclick="openColumnEditor('${tableName}', '${col.name}')" 
+                    title="Edit Column Configuration">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+      });
+
+      const tableCard = `
+    <div class="table-card" id="table-${tableName.replace('.', '-')}" data-table="${tableName}">
+      <div class="table-card-header">
+        <div>
+          <i class="fas fa-table text-primary"></i>
+          <span class="table-card-title">${tableName}</span>
+          <small class="text-muted ms-2">alias: ${tableAlias}</small>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-primary me-1" onclick="showTablePreview('${tableName}')" title="Preview Data">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" onclick="removeTable('${tableName}')" title="Remove Table">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="mb-2">
+        <button class="btn btn-sm btn-outline-primary" onclick="selectAllColumns('${tableName}')">
+          Select All
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="deselectAllColumns('${tableName}')">
+          Deselect All
+        </button>
+      </div>
+      <div class="column-list">
+        ${columnsHTML}
+      </div>
+    </div>
+  `;
+
+      $('#selectedTables').append(tableCard);
+
+      // Add join if there's more than one table
+      if (selectedTables.length > 1) {
+        addJoinSection(selectedTables[selectedTables.length - 2], tableName);
+      }
+
+      generateSQL();
+      showNotification(`Table ${tableName} added to designer`, 'success');
+    }
+
+    // Remove table from canvas
+    function removeTable(tableName) {
+      selectedTables = selectedTables.filter(t => t !== tableName);
+      delete selectedColumns[tableName];
+
+      $(`.table-item[data-table="${tableName}"]`).removeClass('selected');
+      $(`#table-${tableName.replace('.', '-')}`).remove();
+      $(`.join-connector[data-tables*="${tableName}"]`).remove();
+
+      if (selectedTables.length === 0) {
+        $('#emptyMessage').show();
+      }
+
+      generateSQL();
+      showNotification(`Table ${tableName} removed`, 'info');
+    }
+
+    // Column schema update functions
+    function updateColumnName(tableName, originalName, newName) {
+      if (columnSchema[tableName] && columnSchema[tableName][originalName]) {
+        columnSchema[tableName][originalName].name = newName;
+        generateSQL();
+      }
+    }
+
+    function updateColumnType(tableName, columnName, dataType) {
+      if (columnSchema[tableName] && columnSchema[tableName][columnName]) {
+        columnSchema[tableName][columnName].dataType = dataType;
+        generateSQL();
+      }
+    }
+
+    function updateColumnLength(tableName, columnName, length) {
+      if (columnSchema[tableName] && columnSchema[tableName][columnName]) {
+        columnSchema[tableName][columnName].length = length ? parseInt(length) : null;
+        generateSQL();
+      }
+    }
+
+    function updateColumnPrecision(tableName, columnName, precision) {
+      if (columnSchema[tableName] && columnSchema[tableName][columnName]) {
+        columnSchema[tableName][columnName].precision = precision ? parseInt(precision) : null;
+        generateSQL();
+      }
+    }
+
+    function updateColumnScale(tableName, columnName, scale) {
+      if (columnSchema[tableName] && columnSchema[tableName][columnName]) {
+        columnSchema[tableName][columnName].scale = scale ? parseInt(scale) : null;
+        generateSQL();
+      }
+    }
+
+    function updateColumnNullable(tableName, columnName, nullable) {
+      if (columnSchema[tableName] && columnSchema[tableName][columnName]) {
+        columnSchema[tableName][columnName].nullable = nullable;
+        generateSQL();
+      }
+    }
+
+    // --- Column Edit Modal Functions ---
+    let currentEditTable = '';
+    let currentEditColumn = '';
+
+    function openColumnEditor(tableName, columnName) {
+      currentEditTable = tableName;
+      currentEditColumn = columnName;
+      const schema = columnSchema[tableName][columnName];
+
+      $('#editTableName').val(tableName);
+      $('#editOriginalName').val(columnName);
+      $('#editColumnName').val(schema.name);
+
+      // Populate Data Types
+      const typeSelect = $('#editColumnType');
+      typeSelect.empty();
+      dataTypes.forEach(dt => {
+        typeSelect.append(new Option(dt, dt));
+      });
+      typeSelect.val(schema.dataType);
+
+      $('#editColumnLength').val(schema.length || '');
+      $('#editColumnPrecision').val(schema.precision || '');
+      $('#editColumnScale').val(schema.scale || '');
+      $('#editColumnNullable').prop('checked', schema.nullable);
+
+      toggleEditTypeFields();
+
+      const modal = new bootstrap.Modal(document.getElementById('columnEditModal'));
+      modal.show();
+    }
+
+    function toggleEditTypeFields() {
+      const type = $('#editColumnType').val();
+      const isString = ['VARCHAR', 'CHAR', 'STRING'].includes(type);
+      const isDecimal = type === 'DECIMAL';
+
+      if (isString) {
+        $('#editLengthGroup').show();
+        $('#editPrecisionGroup').hide();
+        $('#editScaleGroup').hide();
+      } else if (isDecimal) {
+        $('#editLengthGroup').hide();
+        $('#editPrecisionGroup').show();
+        $('#editScaleGroup').show();
+      } else {
+        $('#editLengthGroup').hide();
+        $('#editPrecisionGroup').hide();
+        $('#editScaleGroup').hide();
+      }
+    }
+
+    function saveColumnChanges() {
+      const tableName = currentEditTable;
+      const originalName = currentEditColumn;
+      const newName = $('#editColumnName').val();
+
+      if (!newName) {
+        alert('Column name cannot be empty');
+        return;
+      }
+
+      // Update Schema
+      const schema = columnSchema[tableName][originalName];
+      schema.name = newName;
+      schema.dataType = $('#editColumnType').val();
+
+      const length = $('#editColumnLength').val();
+      schema.length = length ? parseInt(length) : null;
+
+      const precision = $('#editColumnPrecision').val();
+      schema.precision = precision ? parseInt(precision) : null;
+
+      const scale = $('#editColumnScale').val();
+      schema.scale = scale ? parseInt(scale) : null;
+
+      schema.nullable = $('#editColumnNullable').is(':checked');
+
+      // Close Modal
+      const modalEl = document.getElementById('columnEditModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+
+      // Refresh UI
+      // We need to re-render the table card to show updated name/type
+      // For now, we'll just update the specific row text if possible, or re-render the whole table list
+      // Since we don't have a granular re-render, we might need to update the DOM directly or trigger a refresh
+
+      // Update the display in the list
+      const row = $(`.column-schema-row[data-table="${tableName}"][data-column="${originalName}"]`);
+      row.find('.col-name-text').text(newName);
+      row.find('.col-type-text').text(schema.dataType);
+
+      generateSQL();
+      showNotification('Column updated successfully', 'success');
+    }
+
+    // Toggle column selection
+    function toggleColumn(tableName, columnName, isChecked) {
+      if (isChecked) {
+        if (!selectedColumns[tableName].includes(columnName)) {
+          selectedColumns[tableName].push(columnName);
+        }
+      } else {
+        selectedColumns[tableName] = selectedColumns[tableName].filter(c => c !== columnName);
+      }
+      generateSQL();
+    }
+
+    // Select all columns for a table
+    function selectAllColumns(tableName) {
+      $(`input[data-table="${tableName}"]`).prop('checked', true);
+      selectedColumns[tableName] = tableMetadata[tableName].columns.map(c => c.name);
+      generateSQL();
+    }
+
+    // Deselect all columns for a table
+    function deselectAllColumns(tableName) {
+      $(`input[data-table="${tableName}"]`).prop('checked', false);
+      selectedColumns[tableName] = [];
+      generateSQL();
+    }
+
+    // Add join section between tables
+    function addJoinSection(leftTable, rightTable) {
+      const leftAlias = leftTable.split('.')[1].charAt(0);
+      const rightAlias = rightTable.split('.')[1].charAt(0);
+
+      // Auto-detect join columns (look for FK matches)
+      const leftCols = tableMetadata[leftTable].columns;
+      const rightCols = tableMetadata[rightTable].columns;
+
+      let leftJoinCol = '';
+      let rightJoinCol = '';
+
+      // Try to auto-detect based on column names
+      leftCols.forEach(lc => {
+        rightCols.forEach(rc => {
+          if (lc.name === rc.name && (lc.isPK || rc.isPK || lc.isFK || rc.isFK)) {
+            leftJoinCol = lc.name;
+            rightJoinCol = rc.name;
+          }
+        });
+      });
+
+      const joinHTML = `
+    <div class="join-connector" data-tables="${leftTable},${rightTable}">
+      <div class="join-config">
+        <span><strong>JOIN</strong></span>
+        <select class="form-select form-select-sm" style="width: 150px;" onchange="updateJoinType('${leftTable}', '${rightTable}', this.value)">
+          <option value="INNER">INNER JOIN</option>
+          <option value="LEFT">LEFT JOIN</option>
+          <option value="RIGHT">RIGHT JOIN</option>
+          <option value="FULL">FULL JOIN</option>
+        </select>
+        <span>ON</span>
+        <select class="form-select form-select-sm" style="width: 180px;" id="leftJoin-${leftTable.replace('.', '-')}-${rightTable.replace('.', '-')}">
+          ${tableMetadata[leftTable].columns.map(c =>
+        `<option value="${c.name}" ${c.name === leftJoinCol ? 'selected' : ''}>${leftAlias}.${c.name}</option>`
+      ).join('')}
+        </select>
+        <span>=</span>
+        <select class="form-select form-select-sm" style="width: 180px;" id="rightJoin-${leftTable.replace('.', '-')}-${rightTable.replace('.', '-')}">
+          ${tableMetadata[rightTable].columns.map(c =>
+        `<option value="${c.name}" ${c.name === rightJoinCol ? 'selected' : ''}>${rightAlias}.${c.name}</option>`
+      ).join('')}
+        </select>
+      </div>
+    </div>
+  `;
+
+      $(`#table-${rightTable.replace('.', '-')}`).before(joinHTML);
+
+      // Store join condition
+      joinConditions.push({
+        leftTable: leftTable,
+        rightTable: rightTable,
+        joinType: 'INNER',
+        leftColumn: leftJoinCol,
+        rightColumn: rightJoinCol
+      });
+
+      generateSQL();
+    }
+
+    // Update join type
+    function updateJoinType(leftTable, rightTable, joinType) {
+      const join = joinConditions.find(j => j.leftTable === leftTable && j.rightTable === rightTable);
+      if (join) {
+        join.joinType = joinType;
+        generateSQL();
+      }
+    }
+
+    // Add computed column
+    function addComputedColumn() {
+      computedColumnCounter++;
+      const id = `computed-${computedColumnCounter}`;
+
+      const html = `
+    <div class="computed-column" id="${id}">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <strong>Computed Column #${computedColumnCounter}</strong>
+        <button class="btn btn-sm btn-outline-danger" onclick="removeComputedColumn('${id}')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label small">Column Name</label>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="e.g., total_revenue" 
+                 id="${id}-name"
+                 onchange="generateSQL()">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">Expression</label>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="e.g., amount - discount" 
+                 id="${id}-expr"
+                 onchange="generateSQL()">
+        </div>
+      </div>
+    </div>
+  `;
+
+      $('#computedColumns').append(html);
+      computedColumns.push({ id, name: '', expression: '' });
+    }
+
+    // Remove computed column
+    function removeComputedColumn(id) {
+      $(`#${id}`).remove();
+      computedColumns = computedColumns.filter(c => c.id !== id);
+      generateSQL();
+    }
+
+    // Add filter
+    function addFilter() {
+      filterCounter++;
+      const id = `filter-${filterCounter}`;
+
+      const html = `
+    <div class="alert alert-light border" id="${id}">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <strong>Filter #${filterCounter}</strong>
+        <button class="btn btn-sm btn-outline-danger" onclick="removeFilter('${id}')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <select class="form-select form-select-sm" id="${id}-column" onchange="generateSQL()">
+            <option value="">Select column...</option>
+            ${selectedTables.flatMap(t =>
+        tableMetadata[t].columns.map(c =>
+          `<option value="${t.split('.')[1]}.${c.name}">${t.split('.')[1]}.${c.name}</option>`
+        )
+      ).join('')}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select form-select-sm" id="${id}-operator" onchange="generateSQL()">
+            <option value="=">=</option>
+            <option value="!=">!=</option>
+            <option value=">">></option>
+            <option value="<"><</option>
+            <option value=">=">>=</option>
+            <option value="<="><=</option>
+            <option value="LIKE">LIKE</option>
+            <option value="IN">IN</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="Value" 
+                 id="${id}-value"
+                 onchange="generateSQL()">
+        </div>
+      </div>
+    </div>
+  `;
+
+      $('#filterList').append(html);
+      filters.push({ id, column: '', operator: '=', value: '' });
+    }
+
+    // Remove filter
+    function removeFilter(id) {
+      $(`#${id}`).remove();
+      filters = filters.filter(f => f.id !== id);
+      generateSQL();
+    }
+
+    // Toggle aggregation
+    function toggleAggregation() {
+      const enabled = $('#enableAggregation').is(':checked');
+      $('#aggregationOptions').toggle(enabled);
+      generateSQL();
+    }
+
+    // Generate SQL
+    // Generate SQL
+    function generateSQL() {
+      // Update full table name display
+      const catalog = $('#dmCatalog').val() || 'main.dm';
+      const tableName = $('#dmTableName').val() || 'output_table';
+      const fullName = `${catalog}.${tableName}`;
+      $('#fullTableName').text(fullName);
+
+      if (selectedTables.length === 0) {
+        const msg = '-- Configure target DM table and select source tables to generate SQL';
+        $('#sqlPreviewCreate code').text(msg);
+        $('#sqlPreviewSelect code').text(msg);
+        $('#configPreviewKeys code').text('-- No configuration available');
+        $('#configPreviewValues code').text('-- No configuration available');
+        return;
+      }
+
+      // --- Build SELECT Query ---
+      let selectSql = 'SELECT\n  ';
+
+      // Build column list
+      const columns = [];
+      selectedTables.forEach(table => {
+        const alias = table.split('.')[1].charAt(0);
+        if (selectedColumns[table] && selectedColumns[table].length > 0) {
+          selectedColumns[table].forEach(col => {
+            columns.push(`${alias}.${col}`);
+          });
+        }
+      });
+
+      // Add computed columns
+      $('.computed-column').each(function () {
+        const id = $(this).attr('id');
+        const name = $(`#${id}-name`).val();
+        const expr = $(`#${id}-expr`).val();
+        if (name && expr) {
+          columns.push(`${expr} AS ${name}`);
+        }
+      });
+
+      if (columns.length === 0) {
+        columns.push('*');
+      }
+
+      selectSql += columns.join(',\n  ');
+
+      // FROM clause
+      selectSql += '\nFROM ' + selectedTables[0] + ' ' + selectedTables[0].split('.')[1].charAt(0);
+
+      // JOIN clauses
+      for (let i = 1; i < selectedTables.length; i++) {
+        const leftTable = selectedTables[i - 1];
+        const rightTable = selectedTables[i];
+        const leftAlias = leftTable.split('.')[1].charAt(0);
+        const rightAlias = rightTable.split('.')[1].charAt(0);
+
+        const leftJoinSelector = `#leftJoin-${leftTable.replace('.', '-')}-${rightTable.replace('.', '-')}`;
+        const rightJoinSelector = `#rightJoin-${leftTable.replace('.', '-')}-${rightTable.replace('.', '-')}`;
+
+        const leftCol = $(leftJoinSelector).val() || 'id';
+        const rightCol = $(rightJoinSelector).val() || 'id';
+
+        const join = joinConditions.find(j => j.leftTable === leftTable && j.rightTable === rightTable) || { joinType: 'INNER' };
+
+        selectSql += `\n${join.joinType} JOIN ${rightTable} ${rightAlias}`;
+        selectSql += `\n  ON ${leftAlias}.${leftCol} = ${rightAlias}.${rightCol}`;
+      }
+
+      // WHERE clause
+      const whereConditions = [];
+      $('.alert.border').each(function () {
+        const id = $(this).attr('id');
+        if (id && id.startsWith('filter-')) {
+          const column = $(`#${id}-column`).val();
+          const operator = $(`#${id}-operator`).val();
+          const value = $(`#${id}-value`).val();
+
+          if (column && value) {
+            const valueStr = operator === 'LIKE' ? `'%${value}%'` :
+              operator === 'IN' ? `(${value})` :
+                isNaN(value) ? `'${value}'` : value;
+            whereConditions.push(`${column} ${operator} ${valueStr}`);
+          }
+        }
+      });
+
+      if (whereConditions.length > 0) {
+        selectSql += '\nWHERE ' + whereConditions.join('\n  AND ');
+      }
+
+      // GROUP BY if aggregation is enabled
+      if ($('#enableAggregation').is(':checked')) {
+        const groupBy = $('#aggregationOptions input').val();
+        if (groupBy) {
+          selectSql += '\nGROUP BY ' + groupBy;
+        }
+      }
+
+      selectSql += ';';
+
+      // --- Build CREATE Query ---
+      const createMode = $('#createMode').val() || 'CREATE OR REPLACE';
+      const description = $('#dmDescription').val();
+
+      // Build column definitions from schema
+      let columnDefs = [];
+      selectedTables.forEach(table => {
+        if (selectedColumns[table] && selectedColumns[table].length > 0 && columnSchema[table]) {
+          selectedColumns[table].forEach(col => {
+            const schema = columnSchema[table][col];
+            if (schema) {
+              let colDef = `  ${schema.name} ${schema.dataType}`;
+
+              // Add length/precision if specified
+              if (schema.length && ['VARCHAR', 'CHAR', 'DECIMAL'].includes(schema.dataType)) {
+                if (schema.dataType === 'DECIMAL' && schema.precision) {
+                  colDef += `(${schema.precision}${schema.scale ? `, ${schema.scale}` : ''})`;
+                } else {
+                  colDef += `(${schema.length})`;
+                }
+              } else if (schema.dataType === 'DECIMAL' && schema.precision) {
+                colDef += `(${schema.precision}${schema.scale ? `, ${schema.scale}` : ''})`;
+              }
+
+              // Add NOT NULL constraint
+              if (!schema.nullable) {
+                colDef += ' NOT NULL';
+              }
+
+              columnDefs.push(colDef);
+            }
+          });
+        }
+      });
+
+      // Add computed columns to definitions
+      $('.computed-column').each(function () {
+        const id = $(this).attr('id');
+        const name = $(`#${id}-name`).val();
+        const expr = $(`#${id}-expr`).val();
+        if (name && expr) {
+          columnDefs.push(`  ${name} STRING`); // Default type for computed columns
+        }
+      });
+
+      let createSql = '';
+      if (columnDefs.length > 0) {
+        createSql = `${createMode} TABLE ${fullName} (\n`;
+        createSql += columnDefs.join(',\n');
+        createSql += '\n)';
+
+        if (description) {
+          createSql += `\nCOMMENT '${description}'`;
+        }
+
+        createSql += `\nTBLPROPERTIES ('delta.autoOptimize.optimizeWrite' = 'true');\n\n`;
+        createSql += `-- Populate table\nINSERT INTO ${fullName}\n${selectSql}`;
+      } else {
+        // Fallback to CTAS if no columns selected
+        createSql = `${createMode} TABLE ${fullName} AS\n${selectSql}`;
+      }
+
+      // --- Build Configuration Object ---
+
+      const config = {
+        target: {
+          catalog: catalog,
+          tableName: tableName,
+          fullName: fullName,
+          description: description,
+          createMode: createMode
+        },
+        sources: {
+          tables: selectedTables,
+          columns: selectedColumns
+        },
+        transformations: {
+          joins: joinConditions,
+          computedColumns: computedColumns,
+          filters: filters
+        },
+        sql: createSql,
+        timestamp: new Date().toISOString()
+      };
+
+      // Flatten Configuration for Display
+      function flattenObject(obj, prefix = '') {
+        return Object.keys(obj).reduce((acc, k) => {
+          const pre = prefix.length ? prefix + '.' : '';
+          if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
+            Object.assign(acc, flattenObject(obj[k], pre + k));
+          } else {
+            acc[pre + k] = obj[k];
+          }
+          return acc;
+        }, {});
+      }
+
+      const flatConfig = flattenObject(config);
+      const configKeys = Object.keys(flatConfig).join('\n');
+      const configValues = Object.values(flatConfig).map(v => JSON.stringify(v)).join('\n');
+
+      // --- Update UI ---
+      $('#sqlPreviewCreate code').text(createSql);
+      $('#sqlPreviewSelect code').text(selectSql);
+      $('#configPreviewKeys code').text(configKeys);
+      $('#configPreviewValues code').text(configValues);
+    }
+
+    // Clear designer
+    function clearDesigner() {
+      if (!confirm('Are you sure you want to clear all selections?')) {
+        return;
+      }
+
+      selectedTables = [];
+      selectedColumns = {};
+      joinConditions = [];
+      computedColumns = [];
+      filters = [];
+
+      $('.table-item').removeClass('selected');
+      $('#selectedTables').empty();
+      $('#computedColumns').empty();
+      $('#filterList').empty();
+      $('#emptyMessage').show();
+      $('#enableAggregation').prop('checked', false);
+      $('#aggregationOptions').hide();
+
+      generateSQL();
+      showNotification('Designer cleared', 'info');
+    }
+
+    // Save transformation
+    function saveTransformation() {
+      const sql = $('#sqlPreview code').text();
+      const tableName = $('#dmTableName').val();
+
+      if (!tableName || tableName.trim() === '') {
+        showNotification('Please enter a Data Mart table name', 'warning');
+        return;
+      }
+
+      if (sql.includes('-- Configure target')) {
+        showNotification('Please configure your transformation first', 'warning');
+        return;
+      }
+
+      const catalog = $('#dmCatalog').val();
+      const description = $('#dmDescription').val();
+      const createMode = $('#createMode').val();
+
+      const config = {
+        target: {
+          catalog: catalog,
+          tableName: tableName,
+          fullName: `${catalog}.${tableName}`,
+          description: description,
+          createMode: createMode
+        },
+        sources: {
+          tables: selectedTables,
+          columns: selectedColumns
+        },
+        transformations: {
+          joins: joinConditions,
+          computedColumns: computedColumns,
+          filters: filters
+        },
+        sql: sql,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log('Transformation saved:', config);
+      showNotification(`Data Mart "${catalog}.${tableName}" saved successfully!`, 'success');
+
+      // In production, this would call an API to save the configuration
+    }
+
+    // Show Configuration Summary
+    function showConfigurationSummary() {
+      // 1. Gather Source Connection Details
+      const sourceConnectionMode = document.querySelector('input[name="connectionMode"]:checked').id === 'modeApi' ? 'API' : 'JDBC';
+      const sourceConnection = {
+        mode: sourceConnectionMode,
+        workspaceUrl: $('#workspaceUrl').val() || 'N/A',
+        accessToken: $('#accessToken').val() ? '***REDACTED***' : 'N/A'
+      };
+
+      if (sourceConnectionMode === 'JDBC') {
+        sourceConnection.serverHost = $('#serverHost').val() || 'N/A';
+        sourceConnection.serverPort = $('#serverPort').val() || 'N/A';
+        sourceConnection.httpPath = $('#httpPath').val() || 'N/A';
+      }
+
+      // 2. Gather Target Connection Details
+      const targetConnMode = document.querySelector('input[name="targetConnectionMode"]:checked').value;
+      let targetConnection = {
+        mode: targetConnMode
+      };
+
+      if (targetConnMode === 'same') {
+        targetConnection.details = 'Same as Source Connection';
+        targetConnection.connectionId = 'current';
+      } else if (targetConnMode === 'existing') {
+        const selectedConn = document.getElementById('targetConnectionSelect');
+        targetConnection.connectionId = selectedConn.value;
+        targetConnection.connectionName = selectedConn.options[selectedConn.selectedIndex].text;
+      } else if (targetConnMode === 'new') {
+        const newGroup = document.getElementById('targetConnNewGroup');
+        targetConnection.workspaceUrl = newGroup.querySelector('input[placeholder*="workspace"]').value || 'N/A';
+        targetConnection.accessToken = newGroup.querySelector('input[type="password"]').value ? '***REDACTED***' : 'N/A';
+      }
+
+      // 3. Gather Metadata Details
+      const metadataDetails = {
+        catalog: $('#metaCatalogSelect').val() || $('#metaCatalog').text(),
+        schemasLoaded: $('#schemaCount').text() || 'N/A',
+        tablesLoaded: $('#tableCount').text() || 'N/A',
+        lastSync: $('#lastSync').text() || 'N/A'
+      };
+
+      // 4. Gather Design/Transformation Details
+      // Get target details from the modal inputs to ensure accuracy
+      const targetCatalog = document.getElementById('targetCatalog').value || 'main';
+      const targetSchema = document.getElementById('targetSchema').value || 'dm';
+      const targetTable = document.getElementById('dmTableName').value || 'output_table';
+
+      const description = $('#dmDescription').val() || '';
+      const createMode = $('#createMode').val() || 'CREATE OR REPLACE';
+
+      // Get design type
+      const designType = $('#designTypeSwitch').is(':checked') ? 'Data Warehouse' : 'Data Mart';
+
+      // Get DW table type if applicable
+      let dwTableType = null;
+      if (designType === 'Data Warehouse') {
+        dwTableType = $('#dwTableTypeSwitch').is(':checked') ? 'Transaction/Fact' : 'Dimension';
+      }
+
+      const designDetails = {
+        designType: designType,
+        dwTableType: dwTableType,
+        target: {
+          catalog: targetCatalog,
+          schema: targetSchema,
+          tableName: targetTable,
+          fullName: `${targetCatalog}.${targetSchema}.${targetTable}`,
+          description: description,
+          createMode: createMode
+        },
+        sources: {
+          tables: selectedTables,
+          selectedColumns: selectedColumns // Includes aliases and types
+        },
+        transformations: {
+          joins: joinConditions,
+          computedColumns: computedColumns,
+          filters: filters,
+          aggregationEnabled: $('#enableAggregation').is(':checked')
+        }
+      };
+
+      // Get SQL from the Create Query tab
+      const generatedSQL = $('#sqlPreviewCreate code').text();
+
+      // Build complete configuration
+      const completeConfig = {
+        jobName: targetTable,
+        createdAt: new Date().toISOString(),
+        sourceConnection: sourceConnection,
+        targetConnection: targetConnection,
+        metadata: metadataDetails,
+        design: designDetails,
+        generatedSQL: generatedSQL
+      };
+
+      // Display in modal
+      $('#configSummaryContent code').text(JSON.stringify(completeConfig, null, 2));
+
+      const modal = new bootstrap.Modal(document.getElementById('configSummaryModal'));
+      modal.show();
+    }
+
+    // Copy configuration to clipboard
+    function copyConfigToClipboard() {
+      const configText = $('#configSummaryContent code').text();
+      navigator.clipboard.writeText(configText).then(() => {
+        showNotification('Configuration copied to clipboard!', 'success');
+      }).catch(err => {
+        showNotification('Failed to copy to clipboard', 'error');
+        console.error('Copy failed:', err);
+      });
+    }
+
+    // Download configuration as JSON file
+    function downloadConfig() {
+      const configText = $('#configSummaryContent code').text();
+      const tableName = $('#dmTableName').val() || 'config';
+      const filename = `${tableName}_config_${new Date().getTime()}.json`;
+
+      const blob = new Blob([configText], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showNotification(`Configuration downloaded as ${filename}`, 'success');
+    }
+
+    // Execute Job
+    function executeJob() {
+      // Show loading state
+      const btn = event.target;
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executing...';
+      btn.disabled = true;
+
+      // Simulate API call
+      setTimeout(() => {
+        showNotification('Job execution started successfully!', 'success');
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
+
+        // Update job status
+        updateJobStatus();
+      }, 2000);
+    }
+
+    // Show workflow summary
+    function showWorkflowSummary() {
+      const config = {
+        workflow: {
+          name: "sales_summary_dm_pipeline",
+          version: "1.0.0",
+          created_by: "partner_admin",
+          created_at: "2025-11-03T20:27:06+05:30"
+        },
+        source: {
+          catalog: "main",
+          schema: "dw",
+          tables: ["sales_orders", "customers", "products"]
+        },
+        transformation: {
+          type: "SQL",
+          joins: [
+            { left: "customers", right: "sales_orders", on: "customer_id", type: "INNER" }
+          ],
+          aggregations: ["SUM(amount)", "COUNT(order_id)", "AVG(amount)"],
+          groupBy: ["region", "customer_segment", "month"]
+        },
+        target: {
+          catalog: "main",
+          schema: "dm",
+          table: "sales_summary"
+        },
+        execution: {
+          cluster_type: "job_cluster",
+          instance_type: "i3.xlarge",
+          workers: "2-8"
+        }
+      };
+
+      // Create modal
+      const modal = `
+    <div class="modal fade" id="workflowModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-file-code"></i> Workflow Configuration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <pre><code>${JSON.stringify(config, null, 2)}</code></pre>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="downloadJSON()">
+              <i class="fas fa-download"></i> Download JSON
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+      // Remove existing modal if any
+      $('#workflowModal').remove();
+
+      // Append and show modal
+      $('body').append(modal);
+      const modalInstance = new bootstrap.Modal(document.getElementById('workflowModal'));
+      modalInstance.show();
+    }
+
+    // Download JSON
+    function downloadJSON() {
+      const config = {
+        workflow: {
+          name: "sales_summary_dm_pipeline",
+          version: "1.0.0",
+          created_by: "partner_admin",
+          created_at: new Date().toISOString()
+        },
+        source: {
+          catalog: "main",
+          schema: "dw",
+          tables: ["sales_orders", "customers", "products"]
+        },
+        transformation: {
+          type: "SQL",
+          joins: [
+            { left: "customers", right: "sales_orders", on: "customer_id", type: "INNER" }
+          ],
+          aggregations: ["SUM(amount)", "COUNT(order_id)", "AVG(amount)"],
+          groupBy: ["region", "customer_segment", "month"]
+        },
+        target: {
+          catalog: "main",
+          schema: "dm",
+          table: "sales_summary"
+        }
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "workflow_config.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+
+      showNotification('Configuration downloaded successfully!', 'success');
+    }
+
+    // Update job status
+    function updateJobStatus() {
+      // Simulate real-time job status update
+      const jobStatusHTML = `
+    <tr>
+      <td><strong>sales_summary_dm</strong></td>
+      <td><code>run_12346</code></td>
+      <td><span class="badge bg-primary">Running</span></td>
+      <td>0m 15s</td>
+      <td>${new Date().toLocaleString('en-IN')}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-warning"><i class="fas fa-stop"></i> Cancel</button>
+      </td>
+    </tr>
+  `;
+
+      console.log('Job status updated');
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const alertClass = type === 'success' ? 'alert-success' :
+        type === 'error' ? 'alert-danger' :
+          type === 'warning' ? 'alert-warning' : 'alert-info';
+
+      const notification = $(`
+    <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+         style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i>
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  `);
+
+      $('body').append(notification);
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        notification.alert('close');
+      }, 5000);
+    }
+
+    // Initialize on document ready
+    $(document).ready(function () {
+      console.log('Databricks ELT UI initialized');
+
+      // Add click handlers for step cards (only for header, not content)
+      $('.flow-step-header').on('click', function (e) {
+        // Only toggle if clicking on header area, not on buttons
+        if (!$(e.target).is('button') && !$(e.target).closest('button').length) {
+          const btn = $(this).find('button').first();
+          toggleDetails(btn[0]);
+        }
+      });
+
+      // Add hover effect to cards
+      $('.step-card, .flow-step').hover(
+        function () {
+          $(this).addClass('shadow-lg');
+        },
+        function () {
+          $(this).removeClass('shadow-lg');
+        }
+      );
+
+      // Simulate real-time updates
+      setInterval(() => {
+        const now = new Date();
+        console.log('Real-time update:', now.toLocaleTimeString());
+      }, 30000);
+
+      // Add search functionality for catalog
+      $('input[placeholder="Search tables..."]').on('keyup', function () {
+        const searchTerm = $(this).val().toLowerCase();
+        $('.table tbody tr').filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(searchTerm) > -1);
+        });
+      });
+    });
+
+    // Tab change event
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      const target = $(e.target).attr("href");
+      console.log('Tab changed to:', target);
+
+      if (target === '#catalog') {
+        showNotification('Loaded 47 tables from Unity Catalog', 'info');
+      } else if (target === '#jobs') {
+        showNotification('Monitoring 24 active jobs', 'info');
+      } else if (target === '#lineage') {
+        showNotification('Lineage graph loaded successfully', 'info');
+      } else if (target === '#monitoring') {
+        showNotification('Real-time metrics updated', 'info');
+      }
+    });
+
+    // API simulation functions
+    function fetchCatalogData() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            catalogs: ['main', 'analytics'],
+            schemas: {
+              main: ['dw', 'dm', 'staging'],
+              analytics: ['reports']
+            },
+            tables: {
+              'main.dw': [
+                { name: 'sales_orders', rows: 2547893, size: '1.2 GB' },
+                { name: 'customers', rows: 150432, size: '45 MB' }
+              ]
+            }
+          });
+        }, 1000);
+      });
+    }
+
+    function executeJobAPI(jobConfig) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            run_id: 'run_' + Math.floor(Math.random() * 100000),
+            status: 'RUNNING',
+            started_at: new Date().toISOString()
+          });
+        }, 1500);
+      });
+    }
+
+    function getLineageData(tableName) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            target: tableName,
+            sources: ['dw.sales_orders', 'dw.customers', 'dw.products'],
+            transformations: ['JOIN', 'AGGREGATE', 'FILTER']
+          });
+        }, 800);
+      });
+    }
+
+    // ===== Job Management Functions =====
+
+    // Show schedule modal
+    function showScheduleModal() {
+      const modal = `
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-clock"></i> Schedule Databricks Job</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label"><strong>Job Name</strong></label>
+              <input type="text" class="form-control" id="scheduleJobName" 
+                     value="sales_summary_dm" readonly>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label"><strong>Schedule Type</strong></label>
+              <select class="form-select" id="scheduleType" onchange="toggleScheduleOptions()">
+                <option value="manual">Manual Only</option>
+                <option value="cron" selected>Cron Expression</option>
+                <option value="interval">Time Interval</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+            
+            <!-- Cron Expression -->
+            <div id="cronOptions" class="mb-3">
+              <label class="form-label"><strong>Cron Expression</strong></label>
+              <input type="text" class="form-control" id="cronExpression" 
+                     placeholder="0 2 * * *" value="0 2 * * *">
+              <small class="text-muted">Format: minute hour day month day-of-week</small>
+              <div class="mt-2">
+                <strong>Quick Templates:</strong>
+                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="setCron('0 0 * * *')">Midnight</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="setCron('0 2 * * *')">2:00 AM</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="setCron('0 */6 * * *')">Every 6 hours</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="setCron('0 0 * * 0')">Weekly (Sunday)</button>
+              </div>
+            </div>
+            
+            <!-- Interval Options -->
+            <div id="intervalOptions" class="mb-3" style="display:none;">
+              <label class="form-label"><strong>Run Every</strong></label>
+              <div class="row">
+                <div class="col-md-6">
+                  <input type="number" class="form-control" id="intervalValue" min="1" value="6">
+                </div>
+                <div class="col-md-6">
+                  <select class="form-select" id="intervalUnit">
+                    <option value="minutes">Minutes</option>
+                    <option value="hours" selected>Hours</option>
+                    <option value="days">Days</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Daily Options -->
+            <div id="dailyOptions" class="mb-3" style="display:none;">
+              <label class="form-label"><strong>Time</strong></label>
+              <input type="time" class="form-control" id="dailyTime" value="02:00">
+            </div>
+            
+            <!-- Weekly Options -->
+            <div id="weeklyOptions" class="mb-3" style="display:none;">
+              <label class="form-label"><strong>Day of Week</strong></label>
+              <select class="form-select" id="weekDay">
+                <option value="0">Sunday</option>
+                <option value="1" selected>Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+              </select>
+              <label class="form-label mt-2"><strong>Time</strong></label>
+              <input type="time" class="form-control" id="weeklyTime" value="02:00">
+            </div>
+            
+            <!-- Monthly Options -->
+            <div id="monthlyOptions" class="mb-3" style="display:none;">
+              <label class="form-label"><strong>Day of Month</strong></label>
+              <input type="number" class="form-control" id="monthDay" min="1" max="31" value="1">
+              <label class="form-label mt-2"><strong>Time</strong></label>
+              <input type="time" class="form-control" id="monthlyTime" value="02:00">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label"><strong>Timezone</strong></label>
+              <select class="form-select" id="timezone">
+                <option value="UTC">UTC</option>
+                <option value="Asia/Kolkata" selected>Asia/Kolkata (IST)</option>
+                <option value="America/New_York">America/New_York (EST)</option>
+                <option value="Europe/London">Europe/London (GMT)</option>
+              </select>
+            </div>
+            
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i> <strong>Preview:</strong>
+              <div id="schedulePreview" class="mt-2">
+                Next run: <strong>Tomorrow at 2:00 AM IST</strong>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveSchedule()">
+              <i class="fas fa-save"></i> Save Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+      $('#scheduleModal').remove();
+      $('body').append(modal);
+      const modalInstance = new bootstrap.Modal(document.getElementById('scheduleModal'));
+      modalInstance.show();
+    }
+
+    // Toggle schedule options based on type
+    function toggleScheduleOptions() {
+      const scheduleType = $('#scheduleType').val();
+
+      $('#cronOptions, #intervalOptions, #dailyOptions, #weeklyOptions, #monthlyOptions').hide();
+
+      switch (scheduleType) {
+        case 'cron':
+          $('#cronOptions').show();
+          break;
+        case 'interval':
+          $('#intervalOptions').show();
+          break;
+        case 'daily':
+          $('#dailyOptions').show();
+          break;
+        case 'weekly':
+          $('#weeklyOptions').show();
+          break;
+        case 'monthly':
+          $('#monthlyOptions').show();
+          break;
+      }
+    }
+
+    // Set cron expression
+    function setCron(expression) {
+      $('#cronExpression').val(expression);
+    }
+
+    // Save schedule
+    function saveSchedule() {
+      const scheduleType = $('#scheduleType').val();
+      const timezone = $('#timezone').val();
+
+      let scheduleConfig = {
+        jobName: $('#scheduleJobName').val(),
+        type: scheduleType,
+        timezone: timezone
+      };
+
+      switch (scheduleType) {
+        case 'cron':
+          scheduleConfig.expression = $('#cronExpression').val();
+          break;
+        case 'interval':
+          scheduleConfig.interval = {
+            value: $('#intervalValue').val(),
+            unit: $('#intervalUnit').val()
+          };
+          break;
+        case 'daily':
+          scheduleConfig.time = $('#dailyTime').val();
+          break;
+        case 'weekly':
+          scheduleConfig.day = $('#weekDay').val();
+          scheduleConfig.time = $('#weeklyTime').val();
+          break;
+        case 'monthly':
+          scheduleConfig.day = $('#monthDay').val();
+          scheduleConfig.time = $('#monthlyTime').val();
+          break;
+      }
+
+      console.log('Schedule saved:', scheduleConfig);
+      showNotification('Job schedule configured successfully!', 'success');
+
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById('scheduleModal')).hide();
+
+      // In production, this would call Databricks Jobs API to set the schedule
+    }
+
+    // Create new job
+    function createNewJob() {
+      showNotification('Please create a transformation in the Workflow Designer tab first', 'info');
+      // Switch to workflow tab
+      $('#workflow-tab').tab('show');
+    }
+
+    // Edit job
+    function editJob(jobName) {
+      const modal = `
+    <div class="modal fade" id="editJobModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-edit"></i> Edit Job: ${jobName}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label"><strong>Job Name</strong></label>
+              <input type="text" class="form-control" value="${jobName}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><strong>Target Table</strong></label>
+              <input type="text" class="form-control" value="main.dm.sales_summary">
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><strong>Status</strong></label>
+              <select class="form-select">
+                <option value="active" selected>Active</option>
+                <option value="paused">Paused</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"><strong>SQL Query</strong></label>
+              <textarea class="form-control" rows="8" readonly>CREATE OR REPLACE TABLE main.dm.sales_summary AS
+SELECT 
+  c.customer_id,
+  c.customer_name,
+  c.region,
+  SUM(s.amount) as total_sales
+FROM dw.customers c
+INNER JOIN dw.sales_orders s ON c.customer_id = s.customer_id
+GROUP BY c.customer_id, c.customer_name, c.region;</textarea>
+            </div>
+            <div class="mb-3">
+              <button class="btn btn-outline-secondary btn-sm" onclick="showScheduleModal()">
+                <i class="fas fa-clock"></i> Edit Schedule
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="updateJob('${jobName}')">
+              <i class="fas fa-save"></i> Update Job
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+      $('#editJobModal').remove();
+      $('body').append(modal);
+      const modalInstance = new bootstrap.Modal(document.getElementById('editJobModal'));
+      modalInstance.show();
+    }
+
+    // Update job
+    function updateJob(jobName) {
+      console.log('Updating job:', jobName);
+      showNotification(`Job "${jobName}" updated successfully!`, 'success');
+      bootstrap.Modal.getInstance(document.getElementById('editJobModal')).hide();
+    }
+
+    // View job details
+    function viewJobDetails(jobName) {
+      const modal = `
+    <div class="modal fade" id="jobDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-info-circle"></i> Job Details: ${jobName}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6 class="mb-3">Configuration</h6>
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>Job Name:</strong></td>
+                      <td>${jobName}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Target Table:</strong></td>
+                      <td><code>main.dm.sales_summary</code></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Status:</strong></td>
+                      <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Schedule:</strong></td>
+                      <td>Daily at 2:00 AM IST</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Created:</strong></td>
+                      <td>2025-10-15 10:30</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Last Modified:</strong></td>
+                      <td>2025-11-03 14:20</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6 class="mb-3">Execution Stats (Last 7 Days)</h6>
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><strong>Total Runs:</strong></td>
+                      <td>7</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Success:</strong></td>
+                      <td><span class="text-success">7 (100%)</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Failed:</strong></td>
+                      <td><span class="text-danger">0 (0%)</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Avg Duration:</strong></td>
+                      <td>12m 34s</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Avg Rows Processed:</strong></td>
+                      <td>2.1M rows</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <hr>
+            
+            <h6 class="mb-3">Transformation SQL</h6>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 8px;"><code>CREATE OR REPLACE TABLE main.dm.sales_summary AS
+SELECT 
+  c.customer_id,
+  c.customer_name,
+  c.region,
+  c.customer_segment,
+  SUM(s.amount) as total_sales,
+  COUNT(s.order_id) as order_count,
+  AVG(s.amount) as avg_order_value
+FROM dw.customers c
+INNER JOIN dw.sales_orders s ON c.customer_id = s.customer_id
+WHERE s.order_date >= '2024-01-01'
+GROUP BY c.customer_id, c.customer_name, c.region, c.customer_segment;</code></pre>
+            
+            <hr>
+            
+            <h6 class="mb-3">Recent Runs</h6>
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Duration</th>
+                  <th>Rows</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>run_12345</code></td>
+                  <td><span class="badge bg-success">Success</span></td>
+                  <td>2025-11-03 02:00</td>
+                  <td>12m 34s</td>
+                  <td>2.1M</td>
+                </tr>
+                <tr>
+                  <td><code>run_12344</code></td>
+                  <td><span class="badge bg-success">Success</span></td>
+                  <td>2025-11-02 02:00</td>
+                  <td>11m 58s</td>
+                  <td>2.0M</td>
+                </tr>
+                <tr>
+                  <td><code>run_12343</code></td>
+                  <td><span class="badge bg-success">Success</span></td>
+                  <td>2025-11-01 02:00</td>
+                  <td>13m 12s</td>
+                  <td>2.2M</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="editJob('${jobName}')">
+              <i class="fas fa-edit"></i> Edit Job
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+      $('#jobDetailsModal').remove();
+      $('body').append(modal);
+      const modalInstance = new bootstrap.Modal(document.getElementById('jobDetailsModal'));
+      modalInstance.show();
+    }
+
+    // Run job now
+    function runJobNow(jobName) {
+      if (!confirm(`Are you sure you want to run "${jobName}" now?`)) {
+        return;
+      }
+
+      showNotification(`Starting job "${jobName}"...`, 'info');
+
+      // Simulate API call
+      setTimeout(() => {
+        showNotification(`Job "${jobName}" started successfully!`, 'success');
+        refreshJobRuns();
+      }, 1500);
+    }
+
+    // Delete job
+    function deleteJob(jobName) {
+      if (!confirm(`Are you sure you want to delete the job "${jobName}"? This action cannot be undone.`)) {
+        return;
+      }
+
+      showNotification(`Job "${jobName}" deleted successfully!`, 'success');
+
+      // Remove from table
+      $(`#createdJobsBody button[onclick="deleteJob('${jobName}')"]`).closest('tr').fadeOut(300, function () {
+        $(this).remove();
+      });
+    }
+
+    // Refresh job runs
+    function refreshJobRuns() {
+      showNotification('Refreshing job runs...', 'info');
+      // In production, this would fetch latest runs from Databricks API
+      setTimeout(() => {
+        showNotification('Job runs refreshed', 'success');
+      }, 1000);
+    }
+
+    // Export for external use
+    window.DatabricksELT = {
+      toggleDetails,
+      executeJob,
+      showWorkflowSummary,
+      downloadJSON,
+      showNotification,
+      fetchCatalogData,
+      executeJobAPI,
+      getLineageData,
+      showScheduleModal,
+      createNewJob,
+      editJob,
+      viewJobDetails,
+      runJobNow,
+      deleteJob,
+      refreshJobRuns
+    };
+  </script>
+
+  <!-- Data Preview Modal -->
+  <div class="modal fade" id="dataPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-table text-primary"></i> <span id="previewModalTitle">Table
+              Preview</span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="previewModalBody">
+          <!-- Table content will be injected here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuration Summary Modal -->
+  <div class="modal fade" id="configSummaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-file-code text-info"></i> Complete Job Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <pre id="configSummaryContent"
+            style="background: #f8f9fa; padding: 20px; border-radius: 8px; max-height: 600px; overflow-y: auto; font-size: 0.9rem;"><code></code></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="copyConfigToClipboard()">
+            <i class="fas fa-copy"></i> Copy to Clipboard
+          </button>
+          <button type="button" class="btn btn-outline-success" onclick="downloadConfig()">
+            <i class="fas fa-download"></i> Download JSON
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Initialize DataTables
+    $(document).ready(function () {
+      const table = $('#catalogTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "pageLength": 10,
+        "dom": 'rt<"bottom"ip><"clear">', // Custom DOM positioning to hide default search
+        "language": {
+          "emptyTable": "No tables found in this catalog"
+        }
+      });
+
+      // Connect custom search input
+      $('#catalogSearchInput').on('keyup', function () {
+        table.search(this.value).draw();
+      });
+
+      // Initialize Created Jobs Table
+      const createdJobsTable = $('#createdJobsTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "pageLength": 5,
+        "dom": 'rt<"bottom"ip><"clear">',
+        "language": {
+          "emptyTable": "No jobs created yet"
+        }
+      });
+
+      $('#createdJobsSearch').on('keyup', function () {
+        createdJobsTable.search(this.value).draw();
+      });
+
+      // Initialize Recent Runs Table
+      const recentRunsTable = $('#recentRunsTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "pageLength": 5,
+        "dom": 'rt<"bottom"ip><"clear">',
+        "language": {
+          "emptyTable": "No recent runs found"
+        }
+      });
+
+      $('#recentRunsSearch').on('keyup', function () {
+        recentRunsTable.search(this.value).draw();
+      });
+
+      // Initialize Lineage View
+      renderLineage('sales_summary_dm');
+
+      // Initialize Design Type (Default to DM/Gold)
+      updateDesignType('dm');
+    });
+
+    // ===== Data Lineage Logic =====
+    const lineageData = {
+      'sales_summary_dm': {
+        target: 'main.dm.sales_summary',
+        sources: [
+          { name: 'dw.sales_orders', rows: '2.5M rows' },
+          { name: 'dw.customers', rows: '150K rows' },
+          { name: 'dw.products', rows: '50K rows' }
+        ],
+        transform: {
+          join: 'INNER JOIN',
+          agg: 'SUM(amount), COUNT(order_id), AVG(amount)',
+          groupBy: 'region, customer_segment, month',
+          filters: "order_date >= '2024-01-01'"
+        }
+      },
+      'customer_360_view': {
+        target: 'main.dm.customer_360',
+        sources: [
+          { name: 'dw.customers', rows: '150K rows' },
+          { name: 'dw.transactions', rows: '8.1M rows' },
+          { name: 'dw.support_tickets', rows: '12K rows' }
+        ],
+        transform: {
+          join: 'LEFT JOIN',
+          agg: 'COUNT(transaction_id), MAX(last_purchase)',
+          groupBy: 'customer_id',
+          filters: "status = 'Active'"
+        }
+      },
+      'product_analytics': {
+        target: 'main.dm.product_metrics',
+        sources: [
+          { name: 'dw.products', rows: '50K rows' },
+          { name: 'dw.sales_orders', rows: '2.5M rows' },
+          { name: 'dw.inventory', rows: '45K rows' }
+        ],
+        transform: {
+          join: 'FULL OUTER JOIN',
+          agg: 'SUM(quantity_sold), AVG(margin)',
+          groupBy: 'product_category, month',
+          filters: "stock_quantity > 0"
+        }
+      }
+    };
+
+    function renderLineage(jobId) {
+      const data = lineageData[jobId];
+      if (!data) return;
+
+      // Update Header
+      $('#lineageHeader').html(`<i class="fas fa-project-diagram"></i> Lineage Graph for <code>${data.target}</code>`);
+
+      // Update Active List Item
+      $('#lineageJobList .list-group-item').removeClass('active');
+      $(`#lineageJobList button[onclick="renderLineage('${jobId}')"]`).addClass('active');
+
+      // Generate HTML
+      const sourcesHtml = data.sources.map(s => `
+        <div class="mb-2">📊 <code>${s.name}</code> <small class="text-muted">(${s.rows})</small></div>
+      `).join('');
+
+      const html = `
+        <div class="text-center p-5" style="background: #f8f9fa; border-radius: 12px;">
+          <div style="display: inline-block; text-align: left;">
+            <div class="mb-4">
+              <h5><i class="fas fa-database text-primary"></i> Source Tables (DW Layer)</h5>
+              <div class="ms-4">
+                ${sourcesHtml}
+              </div>
+            </div>
+
+            <div class="text-center mb-4">
+              <i class="fas fa-arrow-down fa-2x text-primary"></i>
+              <div class="mt-2"><small>JOIN, AGGREGATE, TRANSFORM</small></div>
+              <i class="fas fa-arrow-down fa-2x text-primary mt-2"></i>
+            </div>
+
+            <div>
+              <h5><i class="fas fa-chart-pie text-success"></i> Target Table (DM Layer)</h5>
+              <div class="ms-4">
+                <div class="alert alert-success mb-0">
+                  🎯 <code><strong>${data.target}</strong></code> <small class="text-muted">(Updated: Just now)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h6>Transformation Details:</h6>
+          <ul>
+            <li>Join Type: <strong>${data.transform.join}</strong></li>
+            <li>Aggregations: <strong>${data.transform.agg}</strong></li>
+            <li>Group By: <strong>${data.transform.groupBy}</strong></li>
+            <li>Filters: <strong>${data.transform.filters}</strong></li>
+          </ul>
+        </div>
+      `;
+
+      $('#lineageCanvas').html(html);
+    }
+
+    // ===== Monitoring Charts =====
+    const ctxTrends = document.getElementById('jobTrendsChart').getContext('2d');
+    new Chart(ctxTrends, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Successful Runs',
+          data: [120, 132, 101, 134, 145, 150, 142],
+          borderColor: '#7AC143',
+          backgroundColor: 'rgba(122, 193, 67, 0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Failed Runs',
+          data: [2, 4, 1, 5, 2, 3, 2],
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const ctxResource = document.getElementById('resourceChart').getContext('2d');
+    new Chart(ctxResource, {
+      type: 'doughnut',
+      data: {
+        labels: ['Compute', 'Storage', 'Network'],
+        datasets: [{
+          data: [65, 25, 10],
+          backgroundColor: [
+            '#0099FF',
+            '#7AC143',
+            '#ffc107'
+          ],
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        }
+      }
+    });
+  </script>
+  <!-- Column Edit Modal -->
+  <div class="modal fade" id="columnEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Column Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editTableName">
+          <input type="hidden" id="editOriginalName">
+
+          <div class="mb-3">
+            <label class="form-label">Column Name</label>
+            <input type="text" class="form-control" id="editColumnName">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Data Type</label>
+            <select class="form-select" id="editColumnType" onchange="toggleEditTypeFields()">
+              <!-- Options populated by JS -->
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3" id="editLengthGroup">
+              <label class="form-label">Length</label>
+              <input type="number" class="form-control" id="editColumnLength" placeholder="e.g. 255">
+            </div>
+            <div class="col-md-6 mb-3" id="editPrecisionGroup" style="display:none;">
+              <label class="form-label">Precision</label>
+              <input type="number" class="form-control" id="editColumnPrecision" placeholder="e.g. 10">
+            </div>
+            <div class="col-md-6 mb-3" id="editScaleGroup" style="display:none;">
+              <label class="form-label">Scale</label>
+              <input type="number" class="form-control" id="editColumnScale" placeholder="e.g. 2">
+            </div>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="editColumnNullable">
+            <label class="form-check-label" for="editColumnNullable">
+              Nullable (Allow NULL values)
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="saveColumnChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
