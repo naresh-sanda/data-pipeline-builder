@@ -18,45 +18,15 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      /* Primary Colors */
-      --primary-color: #1976D2;
-      --primary-light: #42A5F5;
-      --primary-dark: #1565C0;
-
-      /* Secondary Colors */
-      --secondary-color: #43A047;
-      --secondary-light: #66BB6A;
-      --secondary-dark: #388E3C;
-
-      /* Accent Colors */
-      --accent-color: #263238;
-      --accent-light: #37474F;
-
-      /* Semantic Colors */
-      --success-color: #43A047;
-      --warning-color: #FB8C00;
-      --danger-color: #E53935;
-      --info-color: #039BE5;
-
-      /* Neutral Colors */
-      --bg-primary: #FFFFFF;
-      --bg-secondary: #F5F7FA;
-      --bg-tertiary: #ECEFF1;
-
-      --text-primary: #212121;
-      --text-secondary: #757575;
-      --text-tertiary: #9E9E9E;
-
-      --border-color: #E0E0E0;
-      --border-dark: #BDBDBD;
-
-      /* Special Colors */
-      --file-source-bg: #FFF8E1;
-      --file-source-border: #FFB300;
-
-      /* Legacy Support (deprecated) */
+      --primary-color: #0099FF;
+      --secondary-color: #7AC143;
+      --accent-color: #2C3E50;
       --dark-bg: #1E1E1E;
-      --light-bg: #F5F7FA;
+      --light-bg: #F8F9FA;
+      --border-color: #dee2e6;
+      --success-color: #7AC143;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
     }
 
     * {
@@ -67,7 +37,7 @@
 
     body {
       font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg-secondary);
+      background: linear-gradient(135deg, #E3F2FD 0%, #F1F8E9 100%);
       min-height: 100vh;
       padding: 10px;
     }
@@ -83,7 +53,7 @@
 
     /* Header Styles */
     .header {
-      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+      background: linear-gradient(135deg, var(--accent-color) 0%, #34495e 100%);
       color: white;
       padding: 20px 40px;
       display: flex;
@@ -173,7 +143,7 @@
 
     .nav-tabs-custom .nav-link:hover {
       color: var(--primary-color);
-      background: rgba(25, 118, 210, 0.08);
+      background: rgba(0, 153, 255, 0.05);
     }
 
     .nav-tabs-custom .nav-link.active {
@@ -420,14 +390,14 @@
     }
 
     .table-item:hover {
-      background: rgba(25, 118, 210, 0.08);
+      background: #e3f2fd;
       transform: translateX(5px);
       border-left-color: var(--primary-color);
-      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 153, 255, 0.2);
     }
 
     .table-item.selected {
-      background: rgba(67, 160, 71, 0.08);
+      background: linear-gradient(to right, #e8f5e9 0%, #f1f8e9 100%);
       border-left-color: var(--success-color);
       font-weight: 600;
     }
@@ -780,8 +750,8 @@
     }
 
     .table-card.file-source {
-      border-left: 4px solid var(--file-source-border);
-      background: linear-gradient(to right, var(--file-source-bg) 0%, #ffffff 100%);
+      border-left: 4px solid var(--warning-color);
+      background: linear-gradient(to right, #fff9db 0%, #ffffff 100%);
     }
 
     .table-card.file-source .table-card-title::before {
@@ -1089,35 +1059,12 @@
         <!-- Step 3: Transform -->
         <div class="step-pane" id="step-transform">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="d-flex align-items-center gap-3">
-              <h4><i class="fas fa-drafting-compass text-primary"></i> Visual Transformation Designer</h4>
-
-              <!-- Compact Target Configuration Button -->
-              <button class="btn btn-sm btn-outline-primary" onclick="openTargetConfigModal()" id="targetConfigButton">
-                <i class="fas fa-bullseye"></i>
-                <span id="targetConfigLabel">Define Target</span>
-              </button>
-            </div>
-
+            <h4><i class="fas fa-drafting-compass text-primary"></i> Visual Transformation Designer</h4>
             <div>
               <button class="btn btn-outline-secondary me-2" onclick="activateStep('metadata')"><i
                   class="fas fa-arrow-left"></i> Previous</button>
               <button class="btn btn-primary" onclick="activateStep('vcs')">Next Step <i
                   class="fas fa-arrow-right"></i></button>
-            </div>
-          </div>
-
-          <!-- Target Path Display (Compact) -->
-          <div id="targetPathDisplay" class="alert alert-info py-2 px-3 mb-3" style="display: none;">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <i class="fas fa-database"></i>
-                <strong>Target:</strong>
-                <code id="compactTargetPath" class="text-primary">main.dm.table_name</code>
-              </div>
-              <button class="btn btn-sm btn-link text-primary p-0" onclick="openTargetConfigModal()">
-                <i class="fas fa-edit"></i> Edit
-              </button>
             </div>
           </div>
 
@@ -1999,139 +1946,6 @@
     </div>
   </div>
 
-  <!-- Target Configuration Modal -->
-  <div class="modal fade" id="targetConfigModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="fas fa-bullseye text-primary"></i> Configure Target Database
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="modal-body">
-          <!-- Info Alert -->
-          <div class="alert alert-info py-2">
-            <i class="fas fa-info-circle"></i>
-            <strong>Target Connection</strong><br>
-            Define where the transformed data should be written. You can use the same connection as the source, select
-            an existing one, or configure a new connection.
-          </div>
-
-          <!-- Target Connection Selection -->
-          <div class="mb-4">
-            <label class="form-label"><strong>Target Connection Mode</strong></label>
-            <div class="btn-group w-100" role="group">
-              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnSame" value="same" checked
-                onchange="updateTargetConnectionUI()">
-              <label class="btn btn-outline-primary" for="targetConnSame">
-                <i class="fas fa-sync"></i> Same as Source
-              </label>
-
-              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnExisting" value="existing"
-                onchange="updateTargetConnectionUI()">
-              <label class="btn btn-outline-primary" for="targetConnExisting">
-                <i class="fas fa-list"></i> Existing
-              </label>
-
-              <input type="radio" class="btn-check" name="targetConnectionMode" id="targetConnNew" value="new"
-                onchange="updateTargetConnectionUI()">
-              <label class="btn btn-outline-primary" for="targetConnNew">
-                <i class="fas fa-plus-circle"></i> New
-              </label>
-            </div>
-          </div>
-
-          <!-- Connection Details Section -->
-          <div class="card bg-light mb-4">
-            <div class="card-body p-3">
-              <!-- Same as Source / Existing View -->
-              <div id="targetConnSelectGroup">
-                <label class="form-label"><strong>Connection</strong></label>
-                <select class="form-select" id="targetConnectionSelect" disabled>
-                  <option value="current" selected>Current: demo-workspace.cloud.databricks.com</option>
-                  <option value="conn1">Production Workspace (adb-prod-123)</option>
-                  <option value="conn2">Development Workspace (adb-dev-456)</option>
-                  <option value="conn3">Staging Workspace (adb-stg-789)</option>
-                </select>
-                <small class="text-muted mt-1 d-block" id="targetConnHelp">Using the same connection defined in the
-                  Connect step.</small>
-              </div>
-
-              <!-- New Connection View -->
-              <div id="targetConnNewGroup" style="display: none;">
-                <div class="mb-2">
-                  <label class="form-label small">Workspace URL / Host</label>
-                  <input type="text" class="form-control form-control-sm"
-                    placeholder="https://adb-xxxxxxxx.xx.azuredatabricks.net">
-                </div>
-                <div class="mb-0">
-                  <label class="form-label small">Access Token</label>
-                  <input type="password" class="form-control form-control-sm" placeholder="dapi...">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Configuration Form -->
-          <div class="row g-3">
-            <!-- Target Catalog -->
-            <div class="col-md-6">
-              <label class="form-label">
-                <strong><i class="fas fa-database"></i> Target Catalog</strong>
-              </label>
-              <select class="form-select" id="targetCatalog" onchange="updateTargetSchemaOptions()">
-                <option value="main" selected>main</option>
-                <option value="analytics">analytics</option>
-                <option value="sandbox">sandbox</option>
-              </select>
-              <small class="text-muted">Unity Catalog to write data</small>
-            </div>
-
-            <!-- Target Schema -->
-            <div class="col-md-6">
-              <label class="form-label">
-                <strong><i class="fas fa-folder"></i> Target Schema</strong>
-              </label>
-              <select class="form-select" id="targetSchema" onchange="updateFullTargetPath()">
-                <option value="dw">dw</option>
-                <option value="dm" selected>dm</option>
-                <option value="staging">staging</option>
-              </select>
-              <small class="text-muted">Schema within the catalog</small>
-            </div>
-          </div>
-
-          <!-- Full Target Path Display -->
-          <div class="mt-4 p-3 bg-light border rounded">
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="flex-grow-1">
-                <small class="text-muted d-block mb-1">Target Location:</small>
-                <h5 class="mb-0">
-                  <code id="fullTargetPath" class="text-primary">main.dm.[table_from_design]</code>
-                </h5>
-              </div>
-              <div id="targetModeIndicator" class="badge bg-success">
-                <i class="fas fa-check"></i> Ready
-              </div>
-            </div>
-          </div>
-
-          <!-- Validation Messages -->
-          <div id="targetValidation" class="mt-3" style="display: none;"></div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="saveTargetConfig()">
-            <i class="fas fa-check"></i> Save Target Configuration
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
     // ===== Visual Transformation Designer - Data & State =====
     const tableMetadata = {
@@ -2869,21 +2683,6 @@
         rowCount: lines.length - 1
       };
 
-      // Initialize column schema for file source
-      if (!columnSchema[fileSource.id]) columnSchema[fileSource.id] = {};
-      columns.forEach(col => {
-        columnSchema[fileSource.id][col.name] = {
-          originalName: col.name,
-          name: col.name,
-          dataType: col.type.toUpperCase(),
-          length: null,
-          precision: null,
-          scale: null,
-          nullable: col.nullable,
-          isPK: false
-        };
-      });
-
       fileSources.push(fileSource);
       addFileToCanvas(fileSource);
     }
@@ -2903,50 +2702,49 @@
       tableCard.innerHTML = `
         <div class="table-card-header">
           <div>
-            <i class="fas fa-file text-warning"></i>
-            <span class="table-card-title">${fileSource.tableName}</span>
-            <small class="text-muted ms-2"><i class="fas fa-file-csv"></i> ${fileSource.fileName} • ${fileSource.rowCount} rows</small>
+            <div class="table-card-title">${fileSource.tableName}</div>
+            <div class="file-info">
+              <i class="fas fa-file"></i> ${fileSource.fileName} • ${fileSource.rowCount} rows
+            </div>
           </div>
-          <div>
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="showFilePreview('${fileSource.id}')" title="Preview Data">
-              <i class="fas fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="removeFileSource('${fileSource.id}')" title="Remove File">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div class="mb-2">
-          <button class="btn btn-sm btn-outline-primary" onclick="selectAllFileColumns('${fileSource.id}')">
-            Select All
-          </button>
-          <button class="btn btn-sm btn-outline-secondary" onclick="deselectAllFileColumns('${fileSource.id}')">
-            Deselect All
+          <button class="btn btn-sm btn-outline-danger" onclick="removeFileSource('${fileSource.id}')">
+            <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="column-list">
+        <div class="column-list" style="max-height: 250px; overflow-y: auto;">
           ${fileSource.columns.map((col, index) => `
-            <div class="column-schema-row p-1 border-bottom" data-table="${fileSource.id}" data-column="${col.name}">
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                  <input type="checkbox" class="column-checkbox me-2" 
-                         id="${fileSource.id}_col_${index}"
-                         data-table="${fileSource.id}" 
-                         data-column="${col.name}" 
-                         checked>
-                  <span class="col-name-text fw-bold text-dark" style="font-size: 0.85rem;">${col.name}</span>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <small class="text-muted col-type-text" style="font-size: 0.75rem;">${col.type}</small>
-                  <button class="btn btn-sm btn-link text-primary p-0" 
-                          onclick="openFileColumnEditor('${fileSource.id}', '${col.name}')" 
-                          title="Edit Column Configuration">
-                    <i class="fas fa-pencil-alt"></i>
-                  </button>
-                </div>
+            <div class="column-item">
+              <div style="display: flex; align-items: flex-start; gap: 8px; width: 100%;">
+                <input type="checkbox" class="column-checkbox" id="${fileSource.id}_col_${index}" 
+                       data-table="${fileSource.id}" data-column="${col.name}" checked 
+                       style="margin-top: 4px; flex-shrink: 0;">
+                <label for="${fileSource.id}_col_${index}" style="flex: 1; cursor: pointer; margin: 0;">
+                  <div style="word-break: break-word;">
+                    <strong style="font-size: 0.85rem;">${col.name}</strong>
+                  </div>
+                  <div>
+                    <span class="text-muted" style="font-size: 0.75rem;">${col.type}</span>
+                  </div>
+                </label>
               </div>
             </div>
           `).join('')}
+        </div>
+        <div class="preview-table-container" style="max-height: 200px;">
+          <table class="table table-sm table-bordered mb-0">
+            <thead>
+              <tr>
+                ${fileSource.columns.map(col => `<th style="font-size: 0.75rem; word-break: break-word; max-width: 150px;">${col.name}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${fileSource.preview.map(row => `
+                <tr>
+                  ${row.map(cell => `<td style="font-size: 0.75rem; word-break: break-word; max-width: 150px;">${cell || ''}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
       `;
 
@@ -2970,231 +2768,6 @@
       if (selectedTables.children.length === 0 && emptyMessage) {
         emptyMessage.style.display = 'block';
       }
-    }
-
-    // Show file preview in modal
-    function showFilePreview(fileId) {
-      const fileSource = fileSources.find(f => f.id === fileId);
-      if (!fileSource) {
-        alert('File source not found');
-        return;
-      }
-
-      let previewHeader = '<thead><tr>';
-      fileSource.columns.forEach(col => {
-        previewHeader += `<th>${col.name}</th>`;
-      });
-      previewHeader += '</tr></thead>';
-
-      let previewBody = '<tbody>';
-      fileSource.preview.forEach(row => {
-        previewBody += '<tr>';
-        row.forEach(cell => {
-          previewBody += `<td>${cell || ''}</td>`;
-        });
-        previewBody += '</tr>';
-      });
-      previewBody += '</tbody>';
-
-      const tableHtml = `
-        <div class="preview-table-container" style="max-height: 400px; margin-top: 0;">
-          <table class="table table-sm table-bordered table-hover table-striped">
-            ${previewHeader}
-            ${previewBody}
-          </table>
-        </div>
-      `;
-
-      $('#previewModalTitle').text(`Data Preview: ${fileSource.fileName}`);
-      $('#previewModalBody').html(tableHtml);
-
-      const modal = new bootstrap.Modal(document.getElementById('dataPreviewModal'));
-      modal.show();
-    }
-
-    // Select all columns for a file
-    function selectAllFileColumns(fileId) {
-      $(`input[data-table="${fileId}"]`).prop('checked', true);
-    }
-
-    // Deselect all columns for a file
-    function deselectAllFileColumns(fileId) {
-      $(`input[data-table="${fileId}"]`).prop('checked', false);
-    }
-
-    // Open column editor for file columns
-    function openFileColumnEditor(fileId, columnName) {
-      currentEditTable = fileId;
-      currentEditColumn = columnName;
-      const schema = columnSchema[fileId][columnName];
-
-      $('#editTableName').val(fileId);
-      $('#editOriginalName').val(columnName);
-      $('#editColumnName').val(schema.name);
-
-      // Populate Data Types
-      const typeSelect = $('#editColumnType');
-      typeSelect.empty();
-      dataTypes.forEach(dt => {
-        typeSelect.append(new Option(dt, dt));
-      });
-      typeSelect.val(schema.dataType);
-
-      $('#editColumnLength').val(schema.length || '');
-      $('#editColumnPrecision').val(schema.precision || '');
-      $('#editColumnScale').val(schema.scale || '');
-      $('#editColumnNullable').prop('checked', schema.nullable);
-
-      toggleEditTypeFields();
-
-      const modal = new bootstrap.Modal(document.getElementById('columnEditModal'));
-      modal.show();
-    }
-
-    // ===== Target Configuration Functions =====
-
-    function openTargetConfigModal() {
-      // Initialize with current values or defaults
-      // Use dmTableName from the main design section
-      const currentTableName = document.getElementById('dmTableName').value;
-
-      if (!currentTableName && selectedTables.length > 0) {
-        autoGenerateTableName();
-      }
-
-      // Initialize UI state
-      updateTargetConnectionUI();
-      updateFullTargetPath();
-
-      const modal = new bootstrap.Modal(document.getElementById('targetConfigModal'));
-      modal.show();
-    }
-
-    function updateTargetConnectionUI() {
-      const mode = document.querySelector('input[name="targetConnectionMode"]:checked').value;
-      const selectGroup = document.getElementById('targetConnSelectGroup');
-      const newGroup = document.getElementById('targetConnNewGroup');
-      const connSelect = document.getElementById('targetConnectionSelect');
-      const helpText = document.getElementById('targetConnHelp');
-
-      if (mode === 'same') {
-        selectGroup.style.display = 'block';
-        newGroup.style.display = 'none';
-        connSelect.disabled = true;
-        connSelect.value = 'current';
-        helpText.textContent = 'Using the same connection defined in the Connect step.';
-      } else if (mode === 'existing') {
-        selectGroup.style.display = 'block';
-        newGroup.style.display = 'none';
-        connSelect.disabled = false;
-        helpText.textContent = 'Select a pre-configured connection from the list.';
-      } else if (mode === 'new') {
-        selectGroup.style.display = 'none';
-        newGroup.style.display = 'block';
-      }
-    }
-
-    function updateTargetSchemaOptions() {
-      const catalog = document.getElementById('targetCatalog').value;
-      const schemaSelect = document.getElementById('targetSchema');
-
-      // Clear existing options
-      schemaSelect.innerHTML = '';
-
-      // Add schemas based on selected catalog
-      if (catalog === 'main') {
-        schemaSelect.innerHTML = `
-          <option value="dw">dw</option>
-          <option value="dm" selected>dm</option>
-          <option value="staging">staging</option>
-        `;
-      } else if (catalog === 'analytics') {
-        schemaSelect.innerHTML = `
-          <option value="reports">reports</option>
-          <option value="dashboards">dashboards</option>
-        `;
-      } else if (catalog === 'sandbox') {
-        schemaSelect.innerHTML = `
-          <option value="dev">dev</option>
-          <option value="test">test</option>
-        `;
-      }
-
-      updateFullTargetPath();
-    }
-
-    function updateFullTargetPath() {
-      const catalog = document.getElementById('targetCatalog')?.value || 'main';
-      const schema = document.getElementById('targetSchema')?.value || 'dm';
-      // Use dmTableName from the main design section
-      const tableName = document.getElementById('dmTableName')?.value || 'table_name';
-
-      const fullPath = `${catalog}.${schema}.${tableName}`;
-      document.getElementById('fullTargetPath').textContent = fullPath;
-
-      // Also update compact display
-      if (document.getElementById('compactTargetPath')) {
-        document.getElementById('compactTargetPath').textContent = fullPath;
-      }
-    }
-
-    function autoGenerateTableName() {
-      if (selectedTables.length === 0) {
-        alert('Please add at least one source table first');
-        return;
-      }
-
-      // Generate table name based on selected source tables
-      const baseName = selectedTables[0].split('.').pop(); // Get table name without schema
-      const suggestedName = `${baseName}_transformed`;
-
-      // Update the main design section input
-      document.getElementById('dmTableName').value = suggestedName;
-      updateFullTargetPath();
-    }
-
-    function saveTargetConfig() {
-      // Use dmTableName from the main design section
-      const tableName = document.getElementById('dmTableName').value.trim();
-
-      // Validation
-      if (!tableName) {
-        document.getElementById('targetValidation').innerHTML = `
-          <div class="alert alert-danger">
-            <i class="fas fa-exclamation-triangle"></i> Please enter a table name in the Design section
-          </div>
-        `;
-        document.getElementById('targetValidation').style.display = 'block';
-        return;
-      }
-
-      // Validate table name (alphanumeric and underscores only)
-      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
-        document.getElementById('targetValidation').innerHTML = `
-          <div class="alert alert-danger">
-            <i class="fas fa-exclamation-triangle"></i> Table name must start with a letter or underscore and contain only letters, numbers, and underscores
-          </div>
-        `;
-        document.getElementById('targetValidation').style.display = 'block';
-        return;
-      }
-
-      // Update button label to show configured state
-      const fullPath = document.getElementById('fullTargetPath').textContent;
-      document.getElementById('targetConfigLabel').innerHTML = `<i class="fas fa-check-circle text-success"></i> ${fullPath}`;
-
-      // Show compact display
-      document.getElementById('targetPathDisplay').style.display = 'block';
-
-      // Hide validation
-      document.getElementById('targetValidation').style.display = 'none';
-
-      // Close modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('targetConfigModal'));
-      modal.hide();
-
-      // Regenerate SQL with new target
-      generateSQL();
     }
 
     // ... (Keep other existing functions like generateSQL, addTableToCanvas etc.) ...
@@ -4012,40 +3585,21 @@
 
     // Show Configuration Summary
     function showConfigurationSummary() {
-      // 1. Gather Source Connection Details
-      const sourceConnectionMode = document.querySelector('input[name="connectionMode"]:checked').id === 'modeApi' ? 'API' : 'JDBC';
-      const sourceConnection = {
-        mode: sourceConnectionMode,
+      // Gather connection details
+      const connectionMode = document.querySelector('input[name="connectionMode"]:checked').id === 'modeApi' ? 'API' : 'JDBC';
+      const connectionDetails = {
+        mode: connectionMode,
         workspaceUrl: $('#workspaceUrl').val() || 'N/A',
         accessToken: $('#accessToken').val() ? '***REDACTED***' : 'N/A'
       };
 
-      if (sourceConnectionMode === 'JDBC') {
-        sourceConnection.serverHost = $('#serverHost').val() || 'N/A';
-        sourceConnection.serverPort = $('#serverPort').val() || 'N/A';
-        sourceConnection.httpPath = $('#httpPath').val() || 'N/A';
+      if (connectionMode === 'JDBC') {
+        connectionDetails.serverHost = $('#serverHost').val() || 'N/A';
+        connectionDetails.serverPort = $('#serverPort').val() || 'N/A';
+        connectionDetails.httpPath = $('#httpPath').val() || 'N/A';
       }
 
-      // 2. Gather Target Connection Details
-      const targetConnMode = document.querySelector('input[name="targetConnectionMode"]:checked').value;
-      let targetConnection = {
-        mode: targetConnMode
-      };
-
-      if (targetConnMode === 'same') {
-        targetConnection.details = 'Same as Source Connection';
-        targetConnection.connectionId = 'current';
-      } else if (targetConnMode === 'existing') {
-        const selectedConn = document.getElementById('targetConnectionSelect');
-        targetConnection.connectionId = selectedConn.value;
-        targetConnection.connectionName = selectedConn.options[selectedConn.selectedIndex].text;
-      } else if (targetConnMode === 'new') {
-        const newGroup = document.getElementById('targetConnNewGroup');
-        targetConnection.workspaceUrl = newGroup.querySelector('input[placeholder*="workspace"]').value || 'N/A';
-        targetConnection.accessToken = newGroup.querySelector('input[type="password"]').value ? '***REDACTED***' : 'N/A';
-      }
-
-      // 3. Gather Metadata Details
+      // Gather metadata details
       const metadataDetails = {
         catalog: $('#metaCatalogSelect').val() || $('#metaCatalog').text(),
         schemasLoaded: $('#schemaCount').text() || 'N/A',
@@ -4053,12 +3607,9 @@
         lastSync: $('#lastSync').text() || 'N/A'
       };
 
-      // 4. Gather Design/Transformation Details
-      // Get target details from the modal inputs to ensure accuracy
-      const targetCatalog = document.getElementById('targetCatalog').value || 'main';
-      const targetSchema = document.getElementById('targetSchema').value || 'dm';
-      const targetTable = document.getElementById('dmTableName').value || 'output_table';
-
+      // Gather design/transformation details
+      const catalog = $('#dmCatalog').val() || 'main.dm';
+      const tableName = $('#dmTableName').val() || 'output_table';
       const description = $('#dmDescription').val() || '';
       const createMode = $('#createMode').val() || 'CREATE OR REPLACE';
 
@@ -4075,16 +3626,15 @@
         designType: designType,
         dwTableType: dwTableType,
         target: {
-          catalog: targetCatalog,
-          schema: targetSchema,
-          tableName: targetTable,
-          fullName: `${targetCatalog}.${targetSchema}.${targetTable}`,
+          catalog: catalog,
+          tableName: tableName,
+          fullName: `${catalog}.${tableName}`,
           description: description,
           createMode: createMode
         },
         sources: {
           tables: selectedTables,
-          selectedColumns: selectedColumns // Includes aliases and types
+          selectedColumns: selectedColumns
         },
         transformations: {
           joins: joinConditions,
@@ -4099,10 +3649,9 @@
 
       // Build complete configuration
       const completeConfig = {
-        jobName: targetTable,
+        jobName: tableName,
         createdAt: new Date().toISOString(),
-        sourceConnection: sourceConnection,
-        targetConnection: targetConnection,
+        connection: connectionDetails,
         metadata: metadataDetails,
         design: designDetails,
         generatedSQL: generatedSQL
