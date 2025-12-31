@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databricks API Integration Guide</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0099FF;
+            --secondary-color: #7AC143;
+            --accent-color: #2C3E50;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #34495e 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .content-wrapper {
+            padding: 40px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #0066CC;
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-badge {
+            font-family: monospace;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .method-GET {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .method-POST {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .method-PATCH {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .method-DELETE {
+            background-color: #ffebee;
+            color: #b71c1c;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: 'Consolas', monospace;
+        }
+
+        .endpoint-url {
+            font-family: 'Consolas', monospace;
+            color: #495057;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .auth-box {
+            background-color: #2d3436;
+            color: #dfe6e9;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex align-items-center">
+                <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="logo-text">Databricks ELT Platform</div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-light text-dark fs-6">API Integration Guide</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Intro -->
+            <div class="section-card">
+                <h2 class="mb-3">Overview</h2>
+                <p class="lead">This document outlines the specific Databricks REST APIs required to power the features
+                    of the <strong>Databricks ELT Platform</strong> application.</p>
+            </div>
+
+            <!-- 1. Connection -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-plug"></i> 1. Connection & Authentication</h3>
+                <p><strong>Goal:</strong> Verify connection to the Databricks Workspace.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Operation</th>
+                                <th style="width: 10%">Method</th>
+                                <th style="width: 35%">Endpoint</th>
+                                <th style="width: 35%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Verify Token</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.0/current-user/me</span></td>
+                                <td>Validates the Personal Access Token (PAT) and retrieves current user info.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>List Clusters</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.0/clusters/list</span></td>
+                                <td>(Optional) Used to check for available compute resources for JDBC/ODBC connections.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. Metadata -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-database"></i> 2. Metadata Management (Unity Catalog)</h3>
+                <p><strong>Goal:</strong> Browse Catalogs, Schemas, and Tables for the "Data Catalog" and "Metadata"
+                    steps.
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>List Catalogs</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/unity-catalog/catalogs</span></td>
+                                <td>Retrieves a list of all catalogs (e.g., <code>main</code>, <code>analytics</code>).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>List Schemas</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/unity-catalog/schemas</span></td>
+                                <td>Lists schemas within a specific catalog. Query param:
+                                    <code>?catalog_name=main</code>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>List Tables</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/unity-catalog/tables</span></td>
+                                <td>Lists tables within a schema. Query param:
+                                    <code>?catalog_name=main&schema_name=dw</code>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Get Table Details</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/unity-catalog/tables/{full_name}</span></td>
+                                <td>Gets detailed metadata (columns, types, comments) for a specific table.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. Transformation -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-code"></i> 3. Transformation & SQL Execution</h3>
+                <p><strong>Goal:</strong> Preview SQL queries and validate logic in the "Visual Transformation
+                    Designer".
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Execute SQL</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.0/sql/statements</span></td>
+                                <td>Executes a SQL statement on a SQL Warehouse. Used for data preview and SQL
+                                    validation.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Get Statement Result</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.0/sql/statements/{statement_id}</span></td>
+                                <td>Retrieves the results of an executed SQL statement.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. Version Control -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fab fa-github"></i> 4. Version Control (Databricks Repos)</h3>
+                <p><strong>Goal:</strong> Commit and push generated SQL/Code to the Git repository.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Get Repo Info</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.0/repos/{repo_id}</span></td>
+                                <td>Checks the status of the connected repository (branch, head commit).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Update Repo</strong></td>
+                                <td><span class="method-badge method-PATCH">PATCH</span></td>
+                                <td><span class="endpoint-url">/api/2.0/repos/{repo_id}</span></td>
+                                <td>Pulls the latest changes from the remote Git provider.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Write File</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.0/workspace/import</span></td>
+                                <td>Writes the generated SQL file to the specific path in the Workspace (Repo).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. Jobs & Execution -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-tasks"></i> 5. Jobs & Execution</h3>
+                <p><strong>Goal:</strong> Create, schedule, and monitor Databricks Jobs.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>List Jobs</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/list</span></td>
+                                <td>Populates the "My Created Jobs" table.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Create Job</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/create</span></td>
+                                <td>Creates a new job definition with the generated task.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Trigger Run</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/run-now</span></td>
+                                <td>Manually triggers a run of an existing job.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>List Runs</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/list</span></td>
+                                <td>Populates the "Recent Job Runs" table and "Monitoring" charts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Get Run Output</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/get-output</span></td>
+                                <td>Retrieves logs and output for a specific job run.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 6. Job Failures -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> 6. Job Failures & Debugging</h3>
+                <p><strong>Goal:</strong> Identify, analyze, and recover from job failures.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>List Failed Runs</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/list</span></td>
+                                <td>List runs with <code>?status=FAILED</code> to identify recent issues.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Get Run Output</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/get-output</span></td>
+                                <td>Get error logs/stack traces. Query param: <code>?run_id={run_id}</code>.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Repair Run</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/repair</span></td>
+                                <td>Retry a failed run, optionally specifying a subset of tasks.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cancel Run</strong></td>
+                                <td><span class="method-badge method-POST">POST</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/cancel</span></td>
+                                <td>Cancel a stuck or hanging job run.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 7. Data Lineage -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-project-diagram"></i> 7. Data Lineage</h3>
+                <p><strong>Goal:</strong> Visualize upstream and downstream dependencies.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Get Table Lineage</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.0/lineage-tracking/table-lineage</span></td>
+                                <td>Retrieves lineage data for a specific table.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 8. Monitoring -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-chart-line"></i> 8. Monitoring & Analytics</h3>
+                <p><strong>Goal:</strong> Populate the dashboard charts.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>List All Runs</strong></td>
+                                <td><span class="method-badge method-GET">GET</span></td>
+                                <td><span class="endpoint-url">/api/2.1/jobs/runs/list</span></td>
+                                <td>Used to aggregate success/failure rates and execution times.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Auth Note -->
+            <div class="section-card bg-light">
+                <h4 class="mb-3"><i class="fas fa-key"></i> Authentication Note</h4>
+                <p>All API requests must include the <strong>Authorization</strong> header:</p>
+                <div class="auth-box">
+                    Authorization: Bearer <YOUR_ACCESS_TOKEN>
+                </div>
+            </div>
+        </div> <!-- End content-wrapper -->
+
+        <!-- Footer -->
+        <footer class="text-center py-4" style="border-top: 1px solid #e0e0e0; color: #6c757d; background: #f8f9fa;">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="mb-1">&copy; 2025 AnvizGnt. All rights reserved.</p>
+                    <small>Databricks ELT Platform v2.0.1 | <a href="#" class="text-decoration-none">Privacy Policy</a>
+                        | <a href="#" class="text-decoration-none">Terms of Service</a></small>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+</body>
+
+</html>
