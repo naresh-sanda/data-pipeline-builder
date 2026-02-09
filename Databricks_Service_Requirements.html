@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databricks Service Requirements Mapping</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0099FF;
+            --secondary-color: #7AC143;
+            --accent-color: #2C3E50;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #34495e 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+        }
+
+        .content-wrapper {
+            padding: 40px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #0066CC;
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-badge {
+            font-family: monospace;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .method-GET {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .method-POST {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .method-JDBC {
+            background-color: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc80;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: 'Consolas', monospace;
+        }
+
+        .endpoint-url {
+            font-family: 'Consolas', monospace;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .alert-info-custom {
+            background-color: #e1f5fe;
+            border-left: 5px solid #039be5;
+            color: #01579b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="d-flex align-items-center">
+                <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="logo-text">Databricks ELT Platform</div>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-light text-dark fs-6">Service Requirements & API Guide</span>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+
+            <!-- Global Version Requirements -->
+            <div class="section-card alert-info-custom">
+                <h3 class="section-title text-dark border-bottom-0 mb-3"><i class="fas fa-info-circle"></i> Version
+                    Compatibility Matrix</h3>
+                <p>The following API and Driver versions are <strong>REQUIRED</strong> when both Source and Target are
+                    Databricks (Lakehouse Federation / Intra-workspace).</p>
+                <div class="row mt-4">
+                    <div class="col-md-6 border-end">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-server me-2"></i>Required API Versions</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>Jobs API</strong>:
+                                <code>2.1</code> (For repair run/task orchestration)
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>SQL
+                                    Execution</strong>: <code>2.0</code> (Warehouse-less execution)</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><strong>Unity
+                                    Catalog</strong>: <code>2.1</code> (Lineage & Schema browsing)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 ps-4">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-plug me-2"></i>JDBC Driver Requirements</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><strong>Class</strong>: <code>com.databricks.client.jdbc.Driver</code></li>
+                            <li class="mb-2"><strong>Min Version</strong>: <span class="badge bg-danger">2.6.38</span>
+                                (Critical for OAuth support)</li>
+                            <li class="mb-2"><strong>Recommended</strong>: <code>2.6.42+</code> (Arrow serialization)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 1: Source & Connection -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-plug"></i> 1. Source & Connection Management</h3>
+                <p><strong>Goal:</strong> Validate credentials and connectivity to Databricks workspaces.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-GET">REST API</span></td>
+                                <td><span class="endpoint-url">GET /api/2.0/clusters/list</span></td>
+                                <td><strong>Connectivity Check</strong>: Verifies token validity and workspace
+                                    reachability.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                <td><code>SELECT 1</code></td>
+                                <td><strong>Warehouse Check</strong>: Verifies SQL Warehouse checks and query execution
+                                    via JDBC.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.0/secrets/scopes/create</span></td>
+                                <td><strong>Security</strong>: Creates a secret scope to store credentials (if not using
+                                    direct pass-through).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 2: Metadata Selection -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-database"></i> 2. Metadata Selection (Unity Catalog)</h3>
+                <p><strong>Goal:</strong> Browse hierarchy (Catalog > Schema > Table) to select source/target.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-GET">REST API</span></td>
+                                <td><span class="endpoint-url">GET /api/2.1/unity-catalog/catalogs</span></td>
+                                <td>Lists available catalogs (needs <code>browse</code> permission).</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                <td><code>SHOW CATALOGS</code></td>
+                                <td>Standard SQL equivalent for listing catalogs.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-GET">REST API</span></td>
+                                <td><span class="endpoint-url">GET /api/2.1/unity-catalog/tables</span></td>
+                                <td>Lists tables in a schema. <br><small class="text-muted">Params: catalog_name,
+                                        schema_name</small></td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                <td><code>SHOW TABLES IN catalog.schema</code></td>
+                                <td>SQL equivalent for listing tables.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 3: Target Definition -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-bullseye"></i> 3. Target Table Definition</h3>
+                <p><strong>Goal:</strong> Define the target table location, storage format (Delta), and constraints.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.0/sql/statements</span></td>
+                                <td>Executes DDL to create/replace target tables.<br><small class="text-muted">CREATE
+                                        TABLE IF NOT EXISTS ... USING DELTA</small></td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                <td><code>CREATE TABLE ...</code></td>
+                                <td>Standard DDL for table creation.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-GET">REST API</span></td>
+                                <td><span class="endpoint-url">GET /api/2.1/unity-catalog/tables/{name}</span></td>
+                                <td>Checks if target table already exists to prompt for overwrite/append logic.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 4: Transformation -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-code"></i> 4. Transformation & Preview</h3>
+                <p><strong>Goal:</strong> Validate transformation logic and preview data.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.0/sql/statements</span></td>
+                                <td>Executes SQL for preview. <br><small class="text-muted">Body: { "statement": "SELECT
+                                        * ... LIMIT 10" }</small></td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                <td><code>SELECT ... LIMIT 10</code></td>
+                                <td>Direct JDBC execution for data preview.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 5: Version Control -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fab fa-github"></i> 5. Version Control (Review)</h3>
+                <p><strong>Goal:</strong> Commit and push generated SQL/Code to the Git repository.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-GET">REST API</span></td>
+                                <td><span class="endpoint-url">GET /api/2.0/repos/{repo_id}</span></td>
+                                <td>Checks status of connected repo branch.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.0/workspace/import</span></td>
+                                <td>Writes the generated pipeline notebook/SQL file to the workspace.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 6: Deploy & Create Workflow -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-play-circle"></i> 6. Deploy & Create Workflow</h3>
+                <p><strong>Goal:</strong> Final step of wizard - Converts pipeline config into a Databricks Job.</p>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%">Type</th>
+                                <th style="width: 40%">Command / Endpoint</th>
+                                <th style="width: 45%">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.1/jobs/create</span></td>
+                                <td><strong>Create Workflow</strong>: Creates the multi-task Job definition with all
+                                    dependencies.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.1/jobs/run-now</span></td>
+                                <td><strong>Execute</strong>: Immediately triggers the newly created job.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="method-badge method-POST">REST API</span></td>
+                                <td><span class="endpoint-url">POST /api/2.1/jobs/reset</span></td>
+                                <td><strong>Update</strong>: If job exists, updates the definition (idempotent deploy).
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Screen 7: Jobs & Execution -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fas fa-tasks"></i> 7. Jobs & Orchestration (Jobs Tab)</h3>
+
+                <!-- Screen 8: Data Lineage -->
+                <div class="section-card">
+                    <h3 class="section-title"><i class="fas fa-project-diagram"></i> 8. Data Lineage & Impact</h3>
+                    <p><strong>Goal:</strong> Visualize data dependencies.</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%">Type</th>
+                                    <th style="width: 40%">Command / Endpoint</th>
+                                    <th style="width: 45%">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="method-badge method-GET">REST API</span></td>
+                                    <td><span class="endpoint-url">GET /api/2.0/lineage-tracking/table-lineage</span>
+                                    </td>
+                                    <td>Official API to get upstream/downstream lineage.</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                    <td><code>SELECT * FROM system.access.table_lineage</code></td>
+                                    <td>Querying System Tables for historical lineage data.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Screen 9: Monitoring -->
+                <div class="section-card">
+                    <h3 class="section-title"><i class="fas fa-chart-line"></i> 9. Monitoring & Setup</h3>
+                    <p><strong>Goal:</strong> Monitor costs and configure infrastructure.</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%">Type</th>
+                                    <th style="width: 40%">Command / Endpoint</th>
+                                    <th style="width: 45%">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="method-badge method-JDBC">JDBC/SQL</span></td>
+                                    <td><code>SELECT * FROM system.billing.usage</code></td>
+                                    <td>Queries DBU consumption for cost monitoring.</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="method-badge method-GET">REST API</span></td>
+                                    <td><span class="endpoint-url">GET /api/2.0/policies/clusters/list</span></td>
+                                    <td>Lists available cluster policies for governance setup.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <footer class="text-center py-4"
+                style="border-top: 1px solid #e0e0e0; color: #6c757d; background: #f8f9fa;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="mb-1">&copy; 2025 AnvizGnt. All rights reserved.</p>
+                        <small>Generated Documentation | Databricks ELT Platform</small>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+</body>
+
+</html>
